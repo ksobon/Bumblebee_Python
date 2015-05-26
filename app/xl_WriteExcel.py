@@ -102,8 +102,16 @@ def ExitExcel(filePath, xlApp, wb, ws):
 	CleanUp([ws,wb,xlApp])
 	return None
 
+def Flatten(*args):
+    for x in args:
+        if hasattr(x, '__iter__'):
+            for y in Flatten(*x):
+                yield y
+        else:
+            yield x
+
 if any(isinstance(x, list) for x in data):
-	data = [item for sublist in data for item in sublist]
+	data = list(Flatten(data))
 
 if runMe:
 	message = None
