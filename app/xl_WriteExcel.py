@@ -102,6 +102,9 @@ def ExitExcel(filePath, xlApp, wb, ws):
 	CleanUp([ws,wb,xlApp])
 	return None
 
+if any(isinstance(x, list) for x in data):
+	data = [item for sublist in data for item in sublist]
+
 if runMe:
 	message = None
 	if LiveStream() == None:
