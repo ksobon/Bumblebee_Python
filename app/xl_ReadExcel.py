@@ -47,14 +47,6 @@ def ReadData(ws, origin, extent, byColumn):
 				dataOut[i].append(rng[j,i])
 		return dataOut
 
-def CleanUp(_list):
-	if isinstance(_list, list):
-		for i in _list:
-			Marshal.ReleaseComObject(i)
-	else:
-		Marshal.ReleaseComObject(_list)
-	return None
-
 def GetOrigin(ws, origin):
 	if origin != None:
 		origin = ws.Cells(origin[1], origin[0])
@@ -69,12 +61,33 @@ def GetExtent(ws, extent):
 		extent = ws.Cells(ws.UsedRange.Rows(ws.UsedRange.Rows.Count).Row, ws.UsedRange.Columns(ws.UsedRange.Columns.Count).Column)
 	return extent
 
-if runMe:
-	message = None
-	xlApp = Excel.ApplicationClass()
+def SetUp(xlApp):
+	# supress updates and warning pop ups
 	xlApp.Visible = False
 	xlApp.DisplayAlerts = False
 	xlApp.ScreenUpdating = False
+	return xlApp
+
+def ExitExcel(filePath, xlApp, wb, ws):
+	# clean up before exiting excel, if any COM object remains
+	# unreleased then excel crashes on open following time
+	def CleanUp(_list):
+		if isinstance(_list, list):
+			for i in _list:
+				Marshal.ReleaseComObject(i)
+		else:
+			Marshal.ReleaseComObject(_list)
+		return None
+	
+	wb.SaveAs(str(filePath))
+	xlApp.ActiveWorkbook.Close(False)
+	xlApp.ScreenUpdating = True
+	CleanUp([ws,wb,xlApp])
+	return None
+
+if runMe:
+	message = None
+	xlApp = SetUp(Excel.ApplicationClass())
 	if os.path.isfile(str(filePath)):
 		try:
 			xlApp.Workbooks.open(str(filePath))
@@ -84,9 +97,7 @@ if runMe:
 			wb = xlApp.ActiveWorkbook
 			ws = xlApp.Sheets(sheetName)
 			dataOut = ReadData(ws, GetOriginExtent(ws, origin, extent)[0], GetOriginExtent(ws, origin, extent)[1], byColumn)
-			xlApp.ActiveWorkbook.Close(False)
-			xlApp.ScreenUpdating = True
-			CleanUp([ws,wb,xlApp])
+			ExitExcel(filePath, xlApp, wb, ws)
 		else:
 			dataOut = []
 			wb = xlApp.ActiveWorkbook
@@ -108,9 +119,7 @@ if runMe:
 					for index, name in enumerate(sheetName):
 						ws = xlApp.Sheets(str(name))
 						dataOut.append(ReadData(ws, GetOrigin(ws, origin), GetExtent(ws, extent), byColumn))
-			xlApp.ActiveWorkbook.Close(False)
-			xlApp.ScreenUpdating = True
-			CleanUp([ws,wb,xlApp])
+			ExitExcel(filePath, xlApp, wb, ws)
 else:
 	message = "Set RunMe to True."
 
