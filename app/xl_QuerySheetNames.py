@@ -27,12 +27,32 @@ dataEnteringNode = IN
 filePath = IN[0]
 runMe = IN[1]
 
-if runMe:
-	message = None
-	xlApp = Excel.ApplicationClass()
+def SetUp(xlApp):
+	# supress updates and warning pop ups
 	xlApp.Visible = False
 	xlApp.DisplayAlerts = False
 	xlApp.ScreenUpdating = False
+	return xlApp
+
+def ExitExcel(xlApp, wb):
+	# clean up before exiting excel, if any COM object remains
+	# unreleased then excel crashes on open following time
+	def CleanUp(_list):
+		if isinstance(_list, list):
+			for i in _list:
+				Marshal.ReleaseComObject(i)
+		else:
+			Marshal.ReleaseComObject(_list)
+		return None
+		
+	xlApp.ActiveWorkbook.Close(False)
+	xlApp.ScreenUpdating = True
+	CleanUp([wb,xlApp])
+	return None
+
+if runMe:
+	message = None
+	xlApp = SetUp(Excel.ApplicationClass())
 	if os.path.isfile(str(filePath)):
 		try:
 			xlApp.Workbooks.open(str(filePath))
@@ -42,10 +62,7 @@ if runMe:
 		dataOut = []
 		for i in range(0, xlApp.Sheets.Count, 1):
 			dataOut.append(xlApp.Sheets(i+1).Name)
-	xlApp.ActiveWorkbook.Close(False)
-	xlApp.ScreenUpdating = True
-	Marshal.ReleaseComObject(wb)
-	Marshal.ReleaseComObject(xlApp)
+	ExitExcel(xlApp, wb)	
 else:
 	message = "Set RunMe to True."
 
