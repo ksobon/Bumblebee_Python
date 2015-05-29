@@ -37,14 +37,36 @@ sheetName = IN[2]
 cellRange = IN[3]
 formatConditions = IN[4]
 
-def LiveStream():
-	try:
-		xlApp = Marshal.GetActiveObject("Excel.Application")
-		xlApp.Visible = True
-		xlApp.DisplayAlerts = False
-		return xlApp
-	except:
-		return None
+def SetUp(xlApp):
+	# supress updates and warning pop ups
+	xlApp.Visible = False
+	xlApp.DisplayAlerts = False
+	xlApp.ScreenUpdating = False
+	return xlApp
+
+def CleanUp(_list):
+	# clean up before exiting excel, if any COM object remains
+	# unreleased then excel crashes on open following time
+	if isinstance(_list, list):
+		for i in _list:
+			try:
+				Marshal.ReleaseComObject(i)
+			except:
+				pass
+	else:
+		try:
+			Marshal.ReleaseComObject(_list)
+		except:
+			pass
+	return None
+
+def ExitExcel(filePath, xlApp, wb, ws):
+	# save any changes and clean up excel sessions
+	wb.SaveAs(str(filePath))
+	xlApp.ActiveWorkbook.Close(False)
+	xlApp.ScreenUpdating = True
+	CleanUp([ws,wb,xlApp])
+	return None
 
 def ConditionFormatCells(origin, extent, ws, formatConditions):
 	
@@ -78,9 +100,6 @@ def ConditionFormatCells(origin, extent, ws, formatConditions):
 			ws.Range[origin, extent].FormatConditions(index).Percent = formatConditions.Percent()
 			ws.Range[origin, extent].FormatConditions(index).Rank = formatConditions.Rank()
 			ws.Range[origin, extent].FormatConditions(index).TopBottom = formatConditions.TopBottom()
-		
-		if fcType == "DataBar":
-			ws.Range[origin, extent].FormatConditions.AddDataBar()
 
 		return ws
 		
@@ -108,26 +127,6 @@ def ConditionFormatCells(origin, extent, ws, formatConditions):
 			ws.Range[origin, extent].FormatConditions(index).ColorScaleCriteria(2).Type = formatConditions.MidType()
 			ws.Range[origin, extent].FormatConditions(index).ColorScaleCriteria(2).FormatColor.Color = formatConditions.MidColor()
 			ws.Range[origin, extent].FormatConditions(index).ColorScaleCriteria(2).Value = formatConditions.MidValue()
-		
-		elif formatConditions.FormatConditionType() == "DataBar":
-			if formatConditions.MinType() != 1 and formatConditions.MinType() != 6:
-				ws.Range[origin, extent].FormatConditions(index).MinPoint.Modify(newtype = formatConditions.MinType(), newvalue = formatConditions.MinValue())
-			else:
-				ws.Range[origin, extent].FormatConditions(index).MinPoint.Modify(newtype = formatConditions.MinType())
-			if formatConditions.MaxType() != 2 and formatConditions.MaxType() != 7:
-				ws.Range[origin, extent].FormatConditions(index).MaxPoint.Modify(newtype = formatConditions.MaxType(), newvalue = formatConditions.MaxValue())
-			else:
-				ws.Range[origin, extent].FormatConditions(index).MaxPoint.Modify(newtype = formatConditions.MaxType())
-			
-			if formatConditions.BorderColor() != None:
-				ws.Range[origin, extent].FormatConditions(index).BarBorder.Type = 1
-			else:
-				ws.Range[origin, extent].FormatConditions(index).BarBorder.Type = 0
-			ws.Range[origin, extent].FormatConditions(index).ShowValue = True
-			ws.Range[origin, extent].FormatConditions(index).BarFillType = formatConditions.GradientFill()
-			ws.Range[origin, extent].FormatConditions(index).BarColor.Color = formatConditions.FillColor()
-			ws.Range[origin, extent].FormatConditions(index).BarBorder.Color.Color = formatConditions.BorderColor()
-			ws.Range[origin, extent].FormatConditions(index).Direction = formatConditions.DirectionType()
 
 		else:
 			fillStyle = formatConditions.GraphicStyle().fillStyle
@@ -155,11 +154,8 @@ def ConditionFormatCells(origin, extent, ws, formatConditions):
 	
 if runMe:
 	message = None
-	if LiveStream() == None:
-		xlApp = Excel.ApplicationClass()
-		xlApp.Visible = False
-		xlApp.DisplayAlerts = False
-		xlApp.ScreenUpdating = False
+	xlApp = SetUp(Excel.ApplicationClass())
+	try:
 		if os.path.isfile(str(filePath)):
 			xlApp.Workbooks.open(str(filePath))
 			wb = xlApp.ActiveWorkbook
@@ -177,16 +173,14 @@ if runMe:
 					ConditionFormatCells(origin, extent, ws, format)
 					Marshal.ReleaseComObject(extent)
 					Marshal.ReleaseComObject(origin)
-			wb.SaveAs(str(filePath))
-			xlApp.ActiveWorkbook.Close(False)
-			xlApp.ScreenUpdating = True
-			Marshal.ReleaseComObject(ws)
-			Marshal.ReleaseComObject(wb)
-			Marshal.ReleaseComObject(xlApp)
+			ExitExcel(filePath, xlApp, wb, ws)
 		else:
 			message = "No file exists. Please Use Write Data Node to create file first before formatting it."
-	else:
-		message = "Close currently running Excel \nsession."
+	except:
+		xlApp.Quit()
+		Marshal.ReleaseComObject(xlApp)
+		message = "Something went wrong. Please check \n your inputs and try again."
+		pass
 else:
 	message = "Run Me is set to False. Please set \nto True if you wish to write data \nto Excel."
 
