@@ -120,14 +120,20 @@ def ConditionFormatCells(origin, extent, ws, formatConditions):
 				ws.Range[origin, extent].FormatConditions(index).ColorScaleCriteria(2).Value = formatConditions.MaxValue()
 			
 		elif formatConditions.FormatConditionType() == "3Color":
+			# set min type/value/color
 			ws.Range[origin, extent].FormatConditions(index).ColorScaleCriteria(1).Type = formatConditions.MinType()
 			ws.Range[origin, extent].FormatConditions(index).ColorScaleCriteria(1).FormatColor.Color = formatConditions.MinColor()
 			if formatConditions.MinType() != 1:
 				ws.Range[origin, extent].FormatConditions(index).ColorScaleCriteria(1).Value = formatConditions.MinValue()
+			# set mid type/value/color
 			ws.Range[origin, extent].FormatConditions(index).ColorScaleCriteria(2).Type = formatConditions.MidType()
 			ws.Range[origin, extent].FormatConditions(index).ColorScaleCriteria(2).FormatColor.Color = formatConditions.MidColor()
 			ws.Range[origin, extent].FormatConditions(index).ColorScaleCriteria(2).Value = formatConditions.MidValue()
-
+			# set max type/value/color
+			ws.Range[origin, extent].FormatConditions(index).ColorScaleCriteria(3).Type = formatConditions.MaxType()
+			ws.Range[origin, extent].FormatConditions(index).ColorScaleCriteria(3).FormatColor.Color = formatConditions.MaxColor()
+			if formatConditions.MaxType() != 2:
+				ws.Range[origin, extent].FormatConditions(index).ColorScaleCriteria(3).Value = formatConditions.MaxValue()
 		else:
 			fillStyle = formatConditions.GraphicStyle().fillStyle
 			textStyle = formatConditions.GraphicStyle().textStyle
