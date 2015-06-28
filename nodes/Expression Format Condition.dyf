@@ -1,0 +1,55 @@
+<Workspace Version="0.8.0.950" X="-390.567685315082" Y="-201.1579572604" zoom="2.05668026833428" Name="Expression Format Condition" ID="5220ca12-2319-4a94-acca-b0945790e3dc" Description="This node will generate an expression based formatting condition that can be used with Conditionally Format Excel Node." Category="Archi-lab_Bumblebee.Format">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="d59662e1-4569-45ed-b9a6-a0a96624b0ee" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="467.40354313102" y="221.954725239463" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>#Copyright(c) 2015, David Mans, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
+
+import clr
+import sys
+
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+
+import os
+import os.path
+appDataPath = os.getenv('APPDATA')
+bbPath = appDataPath + r"\Dynamo\0.8\packages\Bumblebee\extra"
+if bbPath not in sys.path:
+	sys.path.Add(bbPath)
+
+import bumblebee as bb
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+expression = IN[0]
+graphicStyle = IN[1]
+
+formatCondition = bb.BBExpressionFormatCondition()
+
+if expression != None:
+	formatCondition.expression = expression
+if graphicStyle != None:
+	formatCondition.graphicStyle = graphicStyle
+
+#Assign your output to the OUT variable
+OUT = formatCondition</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="896571a7-475c-4a3e-a579-63d82793948d" type="Dynamo.Nodes.Symbol" nickname="Input" x="301.559917257494" y="207.534481850713" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Expression" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="cbb68d24-8cba-4533-9a95-b0f3f5a6582a" type="Dynamo.Nodes.Symbol" nickname="Input" x="288.88687708647" y="268.766949667621" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="GraphicStyle" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="ecd6409e-eee0-4b5f-a7d3-f3e8a6dec686" type="Dynamo.Nodes.Output" nickname="Output" x="630.822242259576" y="223.656509720649" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="FormatCondition" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="d59662e1-4569-45ed-b9a6-a0a96624b0ee" start_index="0" end="ecd6409e-eee0-4b5f-a7d3-f3e8a6dec686" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="896571a7-475c-4a3e-a579-63d82793948d" start_index="0" end="d59662e1-4569-45ed-b9a6-a0a96624b0ee" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cbb68d24-8cba-4533-9a95-b0f3f5a6582a" start_index="0" end="d59662e1-4569-45ed-b9a6-a0a96624b0ee" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

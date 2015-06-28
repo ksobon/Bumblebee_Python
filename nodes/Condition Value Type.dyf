@@ -1,0 +1,22 @@
+<Workspace Version="0.8.0.950" X="-1114.71303528807" Y="-770.44504130681" zoom="2.72962159758084" Name="Condition Value Type" ID="68f82c91-ec30-4bff-a76d-10df73de8b95" Description="This node will return all Condition Value Types that are available for use with Excel." Category="Archi-lab_Bumblebee.Types">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="dbe0a3eb-33e5-4773-ba18-782f4ba04b35" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="518" y="332.999999999995" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="0">
+      <Script>#Copyright(c) 2015, David Mans, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+#Assign your output to the OUT variable
+OUT = 	["LowestValue", "Number", "Percent", "Formula", "Percentile", "HighestValue", "AutomaticMax", "AutomaticMin", "None"]</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="b2e96059-b0aa-4506-ac42-3efa609f3120" type="Dynamo.Nodes.Output" nickname="Output" x="706.843078686372" y="337.827754653706" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="OUT" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="dbe0a3eb-33e5-4773-ba18-782f4ba04b35" start_index="0" end="b2e96059-b0aa-4506-ac42-3efa609f3120" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

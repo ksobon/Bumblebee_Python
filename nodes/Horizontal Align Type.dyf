@@ -1,0 +1,22 @@
+<Workspace Version="0.8.0.950" X="-421.615427065376" Y="-353.987889891983" zoom="2.05668026833428" Name="Horizontal Align Type" ID="abe1eda4-fd8a-429d-a61c-293cd687f15d" Description="This node will return all horizontal justification types that can be used when defning text style." Category="Archi-lab_Bumblebee.Types">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="309f8fb3-e3ce-4de0-a98e-04ca4c42b8d0" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="371" y="253" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="0">
+      <Script>#Copyright(c) 2015, David Mans, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+#Assign your output to the OUT variable
+OUT = 	["Left", "Center", "Right"]</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="6345eec2-ffbb-46db-b093-12ae17c49672" type="Dynamo.Nodes.Output" nickname="Output" x="497.134832270277" y="288.241138978148" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="OUT" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="309f8fb3-e3ce-4de0-a98e-04ca4c42b8d0" start_index="0" end="6345eec2-ffbb-46db-b093-12ae17c49672" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

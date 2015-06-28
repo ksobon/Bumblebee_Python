@@ -1,0 +1,49 @@
+<Workspace Version="0.8.0.950" X="269.005514921875" Y="-129.802883875" zoom="1.545620359375" Name="Cell Index" ID="25fb7e98-dd92-4eae-b44d-91b4dbc1baa5" Description="This node will convert an excel address notation from string format (A1) to index format (1,1)." Category="Archi-lab_Bumblebee.App">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="96f4316a-38c4-4419-a022-54a8743de591" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="280" y="202" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>#Copyright(c) 2015, David Mans, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
+
+import clr
+import sys
+
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+
+import os
+appDataPath = os.getenv('APPDATA')
+bbPath = appDataPath + r"\Dynamo\0.8\packages\Bumblebee\extra"
+if bbPath not in sys.path:
+	sys.path.Add(bbPath)
+
+import bumblebee as bb
+import string
+import re
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+cellAddress = IN[0]
+
+def ProcessList(_func, _list):
+    return map( lambda x: ProcessList(_func, x) if type(x)==list else _func(x), _list )
+
+if isinstance(cellAddress, list):
+	OUT = ProcessList(bb.CellIndex, cellAddress)
+else:
+	OUT = bb.CellIndex(cellAddress)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="e20c00ae-ad26-49c3-becc-8291185ad7c5" type="Dynamo.Nodes.Symbol" nickname="Input" x="118.448020830592" y="206.752648211044" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Address" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="e9c026c5-5eb1-4ce4-961e-271c0d42c6db" type="Dynamo.Nodes.Output" nickname="Output" x="444.592073972361" y="210.695976589214" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="OUT" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="96f4316a-38c4-4419-a022-54a8743de591" start_index="0" end="e9c026c5-5eb1-4ce4-961e-271c0d42c6db" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e20c00ae-ad26-49c3-becc-8291185ad7c5" start_index="0" end="96f4316a-38c4-4419-a022-54a8743de591" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

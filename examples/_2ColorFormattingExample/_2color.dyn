@@ -1,0 +1,199 @@
+<Workspace Version="0.8.0.950" X="-3029.3822029079" Y="85.2380423665135" zoom="1.00926110858801" Name="Home" RunType="Manual" RunPeriod="100" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSCoreNodesUI.BoolSelector guid="4928c974-0abc-4d1e-b74f-8b97b8438a4d" type="DSCoreNodesUI.BoolSelector" nickname="Boolean" x="3686.15857871563" y="92.5872204962235" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Boolean>True</System.Boolean>
+    </DSCoreNodesUI.BoolSelector>
+    <DSCore.File.Filename guid="5dc3f7df-65f3-4875-ae2a-9be14e3d11e1" type="DSCore.File.Filename" nickname="File Path" x="3426.39620383907" y="8.5105630986688" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.String>D:\Stuff\Dynamo\076-GetBuiltInParameters\TestSheetParam.xlsx</System.String>
+    </DSCore.File.Filename>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="9b089046-a2b4-4ec8-a2dd-32ce82bd1f34" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="3712.39620383907" y="150.302287811959" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="&quot;Sheet1&quot;;" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="d694c0f6-ce04-4388-96b9-6ee30f5c6456" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="3712.39620383907" y="233.263309718211" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="&quot;J8:S21&quot;;" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="9f4cf265-67a1-4ef2-92cd-65e8915756b9" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2421.92487915964" y="-814.02097942352" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="IN[13];" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="367b80eb-f1a2-411d-80f4-8371d76bbfad" type="Dynamo.Nodes.DSFunction" nickname="Color.ByARGB" x="2193.11558522046" y="-726.112490730172" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.Color.ByARGB@int,int,int,int">
+      <PortInfo index="0" default="True" />
+      <PortInfo index="1" default="True" />
+      <PortInfo index="2" default="True" />
+      <PortInfo index="3" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="c32bfac7-10af-46ad-9f47-0ed684697e80" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2089.54671954951" y="-708.701800475191" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="1;&#xA;255;&#xA;255;&#xA;255;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="ee1055d2-258a-42e2-91ef-d98fb4fdab87" type="Dynamo.Nodes.DSFunction" nickname="Color.ByARGB" x="2432.92487915964" y="-730.049417474703" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.Color.ByARGB@int,int,int,int">
+      <PortInfo index="0" default="True" />
+      <PortInfo index="1" default="True" />
+      <PortInfo index="2" default="True" />
+      <PortInfo index="3" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="af6d2cc9-858c-48ca-8aab-d6390bee6040" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2329.35601348869" y="-713.597241120216" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="1;&#xA;255;&#xA;0;&#xA;210;" ShouldFocus="false" />
+    <Dynamo.Nodes.Function guid="6289ced0-2568-498e-97af-9a09e3c12530" type="Dynamo.Nodes.Function" nickname="Conditionally Format Excel" x="3956.50463946336" y="8.5105630986688" isVisible="true" isUpstreamVisible="true" lacing="Shortest">
+      <PortInfo index="1" default="True" />
+      <ID value="43ac48f5-8093-4c9b-94ac-19a233c0bc06" />
+      <Name value="Conditionally Format Excel" />
+      <Description value="This node will allow you to apply conditional formatting to an Excel document or a specific range within the document." />
+      <Inputs>
+        <Input value="FilePath" />
+        <Input value="RunIt" />
+        <Input value="SheetName" />
+        <Input value="CellRange" />
+        <Input value="FormatConditions" />
+      </Inputs>
+      <Outputs>
+        <Output value="OUT" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="c17e01c3-01d2-4acb-bc9f-c3feac47843d" type="Dynamo.Nodes.Function" nickname="Graphic Style" x="2877.07979839538" y="-819.016478234083" isVisible="true" isUpstreamVisible="true" lacing="Shortest">
+      <PortInfo index="0" default="True" />
+      <PortInfo index="1" default="True" />
+      <PortInfo index="2" default="True" />
+      <ID value="dda25583-21b6-4243-8a54-dc32c7a43dcf" />
+      <Name value="Graphic Style" />
+      <Description value="This node will create a graphic style that can be used either for conditional formatting or regular cell formatting. " />
+      <Inputs>
+        <Input value="FillStyle" />
+        <Input value="TextStyle" />
+        <Input value="BorderStyle" />
+      </Inputs>
+      <Outputs>
+        <Output value="GraphicStyle" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="2f39f95d-471a-4590-8bb1-66b1b91a8e02" type="Dynamo.Nodes.Function" nickname="Pattern Types" x="2284.71497247163" y="-818.352183188605" isVisible="true" isUpstreamVisible="true" lacing="Shortest">
+      <ID value="9089f5bb-942b-470b-8e34-596ae04a56a1" />
+      <Name value="Pattern Types" />
+      <Description value="This node will return all pattern types available in Excel." />
+      <Inputs />
+      <Outputs>
+        <Output value="OUT" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="539852a4-faed-48e3-a44e-eba64745d19e" type="Dynamo.Nodes.Function" nickname="Fill Style" x="2641.67143545491" y="-819.243631081571" isVisible="true" isUpstreamVisible="true" lacing="Shortest">
+      <PortInfo index="3" default="True" />
+      <PortInfo index="4" default="True" />
+      <ID value="113644e4-4011-4aaa-a10e-a0919767a766" />
+      <Name value="Fill Style" />
+      <Description value="This node generates a Fill Style that can be used for conditional formatting or regular cell formatting." />
+      <Inputs>
+        <Input value="PatternType" />
+        <Input value="BackgroundColor" />
+        <Input value="PatternColor" />
+        <Input value="Bevel" />
+        <Input value="Opacity" />
+      </Inputs>
+      <Outputs>
+        <Output value="FillStyle" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Watch guid="80bea9b0-34f5-4c5e-b1aa-a9e4bbf8d7ab" type="Dynamo.Nodes.Watch" nickname="Watch" x="4190.32624959381" y="8.14107022751628" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="cfac6c60-70fe-4f14-bb97-8e962853e7c6" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2889.72822698702" y="-916.313660943668" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="&quot;=LEN(TRIM(C1))=0&quot;;" ShouldFocus="false" />
+    <Dynamo.Nodes.Function guid="a754e4f0-af6b-478f-b48c-a3bbb900ae73" type="Dynamo.Nodes.Function" nickname="Expression Format Condition" x="3128.15039952315" y="-845.190518004591" isVisible="true" isUpstreamVisible="true" lacing="Shortest">
+      <ID value="5220ca12-2319-4a94-acca-b0945790e3dc" />
+      <Name value="Expression Format Condition" />
+      <Description value="This node will generate an expression based formatting condition that can be used with Conditionally Format Excel Node." />
+      <Inputs>
+        <Input value="Expression" />
+        <Input value="GraphicStyle" />
+      </Inputs>
+      <Outputs>
+        <Output value="FormatCondition" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="cb3ccd8d-de6e-4e4b-8642-aa2c03a02f99" type="Dynamo.Nodes.Function" nickname="Cell Value Format Condition" x="3115.47035196315" y="-614.171118938786" isVisible="true" isUpstreamVisible="true" lacing="Shortest">
+      <ID value="14152ace-45b6-4531-8a58-0939fa4e2cab" />
+      <Name value="Cell Value Format Condition" />
+      <Description value="This node creates a format condition based on a cell value. " />
+      <Inputs>
+        <Input value="OperatorType" />
+        <Input value="Values" />
+        <Input value="GraphicStyle" />
+      </Inputs>
+      <Outputs>
+        <Output value="FormatCondition" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="f2636b6e-b3ec-4b12-9dab-b821b31b08c8" type="Dynamo.Nodes.Function" nickname="Operator Types" x="2797.8018987729" y="-612.656436434963" isVisible="true" isUpstreamVisible="true" lacing="Shortest">
+      <ID value="5aa8f1be-7c92-4c8c-bd8a-e73c1367d030" />
+      <Name value="Operator Types" />
+      <Description value="This node returns all operator types available in Excel." />
+      <Inputs />
+      <Outputs>
+        <Output value="OUT" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="3b3d82aa-42de-48f1-b9d9-03b30bc60f93" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2924.9450000037" y="-608.406332691732" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="IN[0];" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="6b1d5a92-f846-48ed-af9e-674396828c08" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2922.79088703097" y="-520.287694658014" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="&quot;Author&quot;;" ShouldFocus="false" />
+    <DSCoreNodesUI.CreateList guid="3b8acf30-9cd0-4233-bb7c-6b4b2d0acb89" type="DSCoreNodesUI.CreateList" nickname="List.Create" x="3476.17649587687" y="-754.202918311333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2" />
+    <Dynamo.Nodes.Function guid="e5fcab42-c63d-4e83-a6b8-eaff0ba92a3f" type="Dynamo.Nodes.Function" nickname="(2) Color Scale Format Condition" x="3569.34165006675" y="324.530467187193" isVisible="true" isUpstreamVisible="true" lacing="Shortest">
+      <PortInfo index="1" default="True" />
+      <PortInfo index="4" default="True" />
+      <ID value="d600c221-9483-4209-b6d6-2703df9d3138" />
+      <Name value="(2) Color Scale Format Condition" />
+      <Description value="This node will generate a two (2) color scheme that can be used to format a range of numbers in Excel." />
+      <Inputs>
+        <Input value="MinValueType" />
+        <Input value="MinValue" />
+        <Input value="MinColor" />
+        <Input value="MaxValueType" />
+        <Input value="MaxValue" />
+        <Input value="MaxColor" />
+      </Inputs>
+      <Outputs>
+        <Output value="FormatCondition" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Watch guid="2d9420e7-6270-48cf-8ced-c799894b0d53" type="Dynamo.Nodes.Watch" nickname="Watch" x="3153.12535563584" y="408.603522606389" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="bf4543f5-ade2-419a-963b-fc20502df383" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="3374.79753928704" y="328.213120902049" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="IN[4];&#xA;80;&#xA;IN[4];&#xA;100;" ShouldFocus="false" />
+    <Dynamo.Nodes.Function guid="3c3e07b6-e07b-4ac1-8120-5386619e0402" type="Dynamo.Nodes.Function" nickname="Condition Value Type" x="3164.44463866807" y="325.981688367643" isVisible="true" isUpstreamVisible="true" lacing="Shortest">
+      <ID value="68f82c91-ec30-4bff-a76d-10df73de8b95" />
+      <Name value="Condition Value Type" />
+      <Description value="This node will return all Condition Value Types that are available for use with Excel." />
+      <Inputs />
+      <Outputs>
+        <Output value="OUT" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="e157bae3-3551-4b1a-975e-ee351b083108" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="3171.44105348502" y="951.737598513099" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="&quot;=1&quot;;" ShouldFocus="false" />
+    <ColorNode.nColorPicker guid="6164e7f8-f24e-4b49-83f8-22afd867dd7d" type="ColorNode.nColorPicker" nickname="ColourUI" x="3381.34471426012" y="461.242737326539" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Windows.Media.Color>#FF48B5FF</System.Windows.Media.Color>
+    </ColorNode.nColorPicker>
+    <ColorNode.nColorPicker guid="17c97fd5-89a7-4881-8700-7f41fded9d8b" type="ColorNode.nColorPicker" nickname="ColourUI" x="3381.63333028199" y="546.344881204732" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Windows.Media.Color>#FFFFA500</System.Windows.Media.Color>
+    </ColorNode.nColorPicker>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="4928c974-0abc-4d1e-b74f-8b97b8438a4d" start_index="0" end="6289ced0-2568-498e-97af-9a09e3c12530" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5dc3f7df-65f3-4875-ae2a-9be14e3d11e1" start_index="0" end="6289ced0-2568-498e-97af-9a09e3c12530" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9b089046-a2b4-4ec8-a2dd-32ce82bd1f34" start_index="0" end="6289ced0-2568-498e-97af-9a09e3c12530" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d694c0f6-ce04-4388-96b9-6ee30f5c6456" start_index="0" end="6289ced0-2568-498e-97af-9a09e3c12530" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9f4cf265-67a1-4ef2-92cd-65e8915756b9" start_index="0" end="539852a4-faed-48e3-a44e-eba64745d19e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="367b80eb-f1a2-411d-80f4-8371d76bbfad" start_index="0" end="539852a4-faed-48e3-a44e-eba64745d19e" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c32bfac7-10af-46ad-9f47-0ed684697e80" start_index="0" end="367b80eb-f1a2-411d-80f4-8371d76bbfad" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c32bfac7-10af-46ad-9f47-0ed684697e80" start_index="1" end="367b80eb-f1a2-411d-80f4-8371d76bbfad" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c32bfac7-10af-46ad-9f47-0ed684697e80" start_index="2" end="367b80eb-f1a2-411d-80f4-8371d76bbfad" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c32bfac7-10af-46ad-9f47-0ed684697e80" start_index="3" end="367b80eb-f1a2-411d-80f4-8371d76bbfad" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ee1055d2-258a-42e2-91ef-d98fb4fdab87" start_index="0" end="539852a4-faed-48e3-a44e-eba64745d19e" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="af6d2cc9-858c-48ca-8aab-d6390bee6040" start_index="0" end="ee1055d2-258a-42e2-91ef-d98fb4fdab87" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="af6d2cc9-858c-48ca-8aab-d6390bee6040" start_index="1" end="ee1055d2-258a-42e2-91ef-d98fb4fdab87" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="af6d2cc9-858c-48ca-8aab-d6390bee6040" start_index="2" end="ee1055d2-258a-42e2-91ef-d98fb4fdab87" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="af6d2cc9-858c-48ca-8aab-d6390bee6040" start_index="3" end="ee1055d2-258a-42e2-91ef-d98fb4fdab87" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6289ced0-2568-498e-97af-9a09e3c12530" start_index="0" end="80bea9b0-34f5-4c5e-b1aa-a9e4bbf8d7ab" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c17e01c3-01d2-4acb-bc9f-c3feac47843d" start_index="0" end="a754e4f0-af6b-478f-b48c-a3bbb900ae73" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c17e01c3-01d2-4acb-bc9f-c3feac47843d" start_index="0" end="cb3ccd8d-de6e-4e4b-8642-aa2c03a02f99" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2f39f95d-471a-4590-8bb1-66b1b91a8e02" start_index="0" end="9f4cf265-67a1-4ef2-92cd-65e8915756b9" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="539852a4-faed-48e3-a44e-eba64745d19e" start_index="0" end="c17e01c3-01d2-4acb-bc9f-c3feac47843d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cfac6c60-70fe-4f14-bb97-8e962853e7c6" start_index="0" end="a754e4f0-af6b-478f-b48c-a3bbb900ae73" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a754e4f0-af6b-478f-b48c-a3bbb900ae73" start_index="0" end="3b8acf30-9cd0-4233-bb7c-6b4b2d0acb89" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cb3ccd8d-de6e-4e4b-8642-aa2c03a02f99" start_index="0" end="3b8acf30-9cd0-4233-bb7c-6b4b2d0acb89" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f2636b6e-b3ec-4b12-9dab-b821b31b08c8" start_index="0" end="3b3d82aa-42de-48f1-b9d9-03b30bc60f93" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3b3d82aa-42de-48f1-b9d9-03b30bc60f93" start_index="0" end="cb3ccd8d-de6e-4e4b-8642-aa2c03a02f99" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6b1d5a92-f846-48ed-af9e-674396828c08" start_index="0" end="cb3ccd8d-de6e-4e4b-8642-aa2c03a02f99" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e5fcab42-c63d-4e83-a6b8-eaff0ba92a3f" start_index="0" end="6289ced0-2568-498e-97af-9a09e3c12530" end_index="4" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bf4543f5-ade2-419a-963b-fc20502df383" start_index="0" end="e5fcab42-c63d-4e83-a6b8-eaff0ba92a3f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bf4543f5-ade2-419a-963b-fc20502df383" start_index="1" end="e5fcab42-c63d-4e83-a6b8-eaff0ba92a3f" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bf4543f5-ade2-419a-963b-fc20502df383" start_index="2" end="e5fcab42-c63d-4e83-a6b8-eaff0ba92a3f" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bf4543f5-ade2-419a-963b-fc20502df383" start_index="3" end="e5fcab42-c63d-4e83-a6b8-eaff0ba92a3f" end_index="4" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3c3e07b6-e07b-4ac1-8120-5386619e0402" start_index="0" end="2d9420e7-6270-48cf-8ced-c799894b0d53" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3c3e07b6-e07b-4ac1-8120-5386619e0402" start_index="0" end="bf4543f5-ade2-419a-963b-fc20502df383" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6164e7f8-f24e-4b49-83f8-22afd867dd7d" start_index="0" end="e5fcab42-c63d-4e83-a6b8-eaff0ba92a3f" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="17c97fd5-89a7-4881-8700-7f41fded9d8b" start_index="0" end="e5fcab42-c63d-4e83-a6b8-eaff0ba92a3f" end_index="5" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

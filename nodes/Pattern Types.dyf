@@ -1,0 +1,25 @@
+<Workspace Version="0.8.0.950" X="-576.51805234004" Y="-230.778293229492" zoom="2.05668026833428" Name="Pattern Types" ID="9089f5bb-942b-470b-8e34-596ae04a56a1" Description="This node will return all pattern types available in Excel." Category="Archi-lab_Bumblebee.Types">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="61799e53-ede4-4348-9478-7298f6ea438c" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="473" y="229" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="0">
+      <Script>#Copyright(c) 2015, David Mans, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+#Assign your output to the OUT variable
+OUT = ["xlCheckerBoard", "xlCrissCross", "xlDarkDiagonalDown", "xlGrey16", "xlGray25", 
+			"xlGray50", "xlGray75", "xlGray8", "xlGrid", "xlDarkHorizontal", 
+			"xlLightDiagonalDown", "xlLightHorizontal", "xlLightDiagonalUp", "xlLightVertical", "xlNone", 
+			"xlSemiGray75", "xlSolid", "xlDarkDiagonalUp", "xlDarkVertical"]</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="0a3d2802-7f34-42be-b84d-97a9b62bfdd1" type="Dynamo.Nodes.Output" nickname="Output" x="613.75965112643" y="230.998855004113" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="OUT" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="61799e53-ede4-4348-9478-7298f6ea438c" start_index="0" end="0a3d2802-7f34-42be-b84d-97a9b62bfdd1" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>
