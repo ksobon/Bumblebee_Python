@@ -37,16 +37,6 @@ runMe = IN[1]
 byColumn = IN[2]
 data = IN[3]
 
-def LiveStream():
-	# Checks if Excel is already open
-	try:
-		xlApp = Marshal.GetActiveObject("Excel.Application")
-		xlApp.Visible = True
-		xlApp.DisplayAlerts = False
-		return xlApp
-	except:
-		return None
-
 def SetUp(xlApp):
 	# supress updates and warning pop ups
 	xlApp.Visible = False
@@ -110,17 +100,18 @@ def Flatten(*args):
         else:
             yield x
 
-if any(isinstance(x, list) for x in data):
-	data = list(Flatten(data))
+if isinstance(data, list):
+	if any(isinstance(x, list) for x in data):
+		data = list(Flatten(data))
 
 if runMe:
 	message = None
-	if LiveStream() == None:
+	xlApp = SetUp(Excel.ApplicationClass())
+	try:
 		if os.path.isfile(str(filePath)):
 			# if excel file already exists and data is being written
 			# to single sheet
 			if not isinstance(data, list):
-				xlApp = SetUp(Excel.ApplicationClass())
 				xlApp.Workbooks.open(str(filePath))
 				wb = xlApp.ActiveWorkbook
 				ws = xlApp.Sheets(data.SheetName())
@@ -131,7 +122,6 @@ if runMe:
 			# if excel file already exists but data is being written
 			# to multiple sheets
 			else:
-				xlApp = SetUp(Excel.ApplicationClass())
 				xlApp.Workbooks.open(str(filePath))
 				wb = xlApp.ActiveWorkbook
 				sheetNameSet = set([x.SheetName() for x in data])
@@ -146,7 +136,6 @@ if runMe:
 			# if excel file doesn't exist and data is being written
 			# to a single sheet
 			if not isinstance(data, list):
-				xlApp = SetUp(Excel.ApplicationClass())
 				wb = xlApp.Workbooks.Add()
 				ws = wb.Worksheets[1]
 				ws.Name = data.SheetName()
@@ -157,7 +146,6 @@ if runMe:
 			else:
 				sheetNameSet = set([x.SheetName() for x in data])
 				sheetNameList = list(sheetNameSet)
-				xlApp = SetUp(Excel.ApplicationClass())
 				wb = xlApp.Workbooks.Add()
 				wb.Sheets.Add(After = wb.Sheets(wb.Sheets.Count), Count = len(sheetNameSet)-1)
 				for i in range(0,len(sheetNameSet),1):
@@ -166,8 +154,11 @@ if runMe:
 					ws = xlApp.Sheets(i.SheetName())
 					WriteData(ws , i.Data(), byColumn, i.Origin())
 				ExitExcel(filePath, xlApp, wb, ws)					
-	else:
-		message = "Close currently running Excel \nsession."
+	except:
+		xlApp.Quit()
+		Marshal.ReleaseComObject(xlApp)
+		message = "Something went wrong. Please check \n your inputs and try again."
+		pass
 else:
 	message = "Run Me is set to False. Please set \nto True if you wish to write data \nto Excel."
 
