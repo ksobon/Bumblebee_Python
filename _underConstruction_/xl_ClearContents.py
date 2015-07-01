@@ -36,16 +36,6 @@ clearContent = IN[3]
 clearFormat = IN[4]
 cellRange = IN[5]
 
-def LiveStream():
-	# Checks if Excel is already open
-	try:
-		xlApp = Marshal.GetActiveObject("Excel.Application")
-		xlApp.Visible = True
-		xlApp.DisplayAlerts = False
-		return xlApp
-	except:
-		return None
-
 def SetUp(xlApp):
 	# supress updates and warning pop ups
 	xlApp.Visible = False
@@ -72,7 +62,7 @@ def ExitExcel(filePath, xlApp, wb, ws):
 
 if runMe:
 	message = None
-	if LiveStream() == None:
+	try:
 		xlApp = SetUp(Excel.ApplicationClass())
 		if os.path.isfile(str(filePath)):
 			xlApp.Workbooks.open(str(filePath))
@@ -90,15 +80,16 @@ if runMe:
 			# clear cell formatting settings only
 			if clearFormat:
 				ws.Range[origin, extent].ClearFormats()
-			
 			Marshal.ReleaseComObject(extent)
 			Marshal.ReleaseComObject(origin)
 			ExitExcel(filePath, xlApp, wb, ws)
 		else:
 			message = "Specified file doesn't exists."	
-
-	else:
-		message = "Close currently running Excel \nsession."
+	except:
+		xlApp.Quit()
+		Marshal.ReleaseComObject(xlApp)
+		message = "Something went wrong. Please check \n your inputs and try again. Make sure that Excel is closed when attempting to override the file."
+		pass
 else:
 	message = "Run Me is set to False. Please set \nto True if you wish to write data \nto Excel."
 
