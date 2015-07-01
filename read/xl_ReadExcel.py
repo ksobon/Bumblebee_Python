@@ -21,6 +21,13 @@ sys.path.append(pyt_path)
 
 import os.path
 
+appDataPath = os.getenv('APPDATA')
+bbPath = appDataPath + r"\Dynamo\0.8\packages\Bumblebee\extra"
+if bbPath not in sys.path:
+	sys.path.Add(bbPath)
+
+import bumblebee as bb
+
 #The inputs to this node will be stored as a list in the IN variable.
 dataEnteringNode = IN
 
@@ -49,14 +56,14 @@ def ReadData(ws, origin, extent, byColumn):
 
 def GetOrigin(ws, origin):
 	if origin != None:
-		origin = ws.Cells(origin[1], origin[0])
+		origin = ws.Cells(bb.CellIndex(origin)[1], bb.CellIndex(origin)[0])
 	else:
 		origin = ws.Cells(ws.UsedRange.Row, ws.UsedRange.Column)
 	return origin
 
 def GetExtent(ws, extent):
 	if extent != None:
-		extent = ws.Cells(extent[1], extent[0])
+		extent = ws.Cells(bb.CellIndex(extent)[1], bb.CellIndex(extent)[0])
 	else:
 		extent = ws.Cells(ws.UsedRange.Rows(ws.UsedRange.Rows.Count).Row, ws.UsedRange.Columns(ws.UsedRange.Columns.Count).Column)
 	return extent
@@ -68,7 +75,7 @@ def SetUp(xlApp):
 	xlApp.ScreenUpdating = False
 	return xlApp
 
-def ExitExcel(filePath, xlApp, wb, ws):
+def ExitExcel(xlApp, wb, ws):
 	# clean up before exiting excel, if any COM object remains
 	# unreleased then excel crashes on open following time
 	def CleanUp(_list):
@@ -78,8 +85,7 @@ def ExitExcel(filePath, xlApp, wb, ws):
 		else:
 			Marshal.ReleaseComObject(_list)
 		return None
-	
-	wb.SaveAs(str(filePath))
+		
 	xlApp.ActiveWorkbook.Close(False)
 	xlApp.ScreenUpdating = True
 	CleanUp([ws,wb,xlApp])
@@ -88,38 +94,41 @@ def ExitExcel(filePath, xlApp, wb, ws):
 if runMe:
 	message = None
 	xlApp = SetUp(Excel.ApplicationClass())
-	if os.path.isfile(str(filePath)):
-		try:
+	try:
+		if os.path.isfile(str(filePath)):
 			xlApp.Workbooks.open(str(filePath))
-		except:
-			message = "Excel might be open. Please close it!"
-		if not isinstance(sheetName, list):
-			wb = xlApp.ActiveWorkbook
-			ws = xlApp.Sheets(sheetName)
-			dataOut = ReadData(ws, GetOriginExtent(ws, origin, extent)[0], GetOriginExtent(ws, origin, extent)[1], byColumn)
-			ExitExcel(filePath, xlApp, wb, ws)
-		else:
-			dataOut = []
-			wb = xlApp.ActiveWorkbook
-			if isinstance(origin, list):
-				if isinstance(extent, list):
-					for index, (name, oValue, eValue) in enumerate(zip(sheetName, origin, extent)):
-						ws = xlApp.Sheets(str(name))
-						dataOut.append(ReadData(ws, GetOrigin(ws, oValue), GetExtent(ws, eValue), byColumn))
-				else:
-					for index, (name, oValue) in enumerate(zip(sheetName, origin)):
-						ws = xlApp.Sheets(str(name))
-						dataOut.append(ReadData(ws, GetOrigin(ws, oValue), GetExtent(ws, extent), byColumn))
+			if not isinstance(sheetName, list):
+				wb = xlApp.ActiveWorkbook
+				ws = xlApp.Sheets(sheetName)
+				dataOut = ReadData(ws, GetOrigin(ws, origin), GetExtent(ws, extent), byColumn)
+				ExitExcel(xlApp, wb, ws)
 			else:
-				if isinstance(extent, list):
-					for index, (name, eValue) in enumerate(zip(sheetName, extent)):
-						ws = xlApp.Sheets(str(name))
-						dataOut.append(ReadData(ws, GetOrigin(ws, origin), GetExtent(ws, eValue), byColumn))
+				dataOut = []
+				wb = xlApp.ActiveWorkbook
+				if isinstance(origin, list):
+					if isinstance(extent, list):
+						for index, (name, oValue, eValue) in enumerate(zip(sheetName, origin, extent)):
+							ws = xlApp.Sheets(str(name))
+							dataOut.append(ReadData(ws, GetOrigin(ws, oValue), GetExtent(ws, eValue), byColumn))
+					else:
+						for index, (name, oValue) in enumerate(zip(sheetName, origin)):
+							ws = xlApp.Sheets(str(name))
+							dataOut.append(ReadData(ws, GetOrigin(ws, oValue), GetExtent(ws, extent), byColumn))
 				else:
-					for index, name in enumerate(sheetName):
-						ws = xlApp.Sheets(str(name))
-						dataOut.append(ReadData(ws, GetOrigin(ws, origin), GetExtent(ws, extent), byColumn))
-			ExitExcel(filePath, xlApp, wb, ws)
+					if isinstance(extent, list):
+						for index, (name, eValue) in enumerate(zip(sheetName, extent)):
+							ws = xlApp.Sheets(str(name))
+							dataOut.append(ReadData(ws, GetOrigin(ws, origin), GetExtent(ws, eValue), byColumn))
+					else:
+						for index, name in enumerate(sheetName):
+							ws = xlApp.Sheets(str(name))
+							dataOut.append(ReadData(ws, GetOrigin(ws, origin), GetExtent(ws, extent), byColumn))
+				ExitExcel(xlApp, wb, ws)
+	except:
+		xlApp.Quit()
+		Marshal.ReleaseComObject(xlApp)
+		message = "Something went wrong. Please check \n your inputs and try again."
+		pass
 else:
 	message = "Set RunMe to True."
 
