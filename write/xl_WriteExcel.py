@@ -115,8 +115,6 @@ if runMe:
 				xlApp.Workbooks.open(str(filePath))
 				wb = xlApp.ActiveWorkbook
 				ws = xlApp.Sheets(data.SheetName())
-				ws.Cells.ClearContents()
-				ws.Cells.Clear()
 				WriteData(ws, data.Data(), byColumn, data.Origin())
 				ExitExcel(filePath, xlApp, wb, ws)
 			# if excel file already exists but data is being written
@@ -125,9 +123,6 @@ if runMe:
 				xlApp.Workbooks.open(str(filePath))
 				wb = xlApp.ActiveWorkbook
 				sheetNameSet = set([x.SheetName() for x in data])
-				for i in range(0,len(sheetNameSet),1):
-					wb.Worksheets[i+1].Cells.ClearContents()
-					wb.Worksheets[i+1].Cells.Clear()
 				for i in data:
 					ws = xlApp.Sheets(i.SheetName())
 					WriteData(ws, i.Data(), byColumn, i.Origin())
@@ -157,7 +152,7 @@ if runMe:
 	except:
 		xlApp.Quit()
 		Marshal.ReleaseComObject(xlApp)
-		message = "Something went wrong. Please check \n your inputs and try again."
+		message = "Something went wrong. Please check \n your inputs and try again. Make sure that Excel is closed when attempting to override the file."
 		pass
 else:
 	message = "Run Me is set to False. Please set \nto True if you wish to write data \nto Excel."
