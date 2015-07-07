@@ -114,6 +114,7 @@ if runMe:
 		import traceback
 		errorReport = traceback.format_exc()
 else:
+	errorReport = None
 	message = "Run Me is set to False. Please set \nto True if you wish to write data \nto Excel."
 if errorReport == None:
 	OUT = OUT = '\n'.join('{:^35}'.format(s) for s in message.split('\n'))
