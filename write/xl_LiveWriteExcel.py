@@ -15,7 +15,6 @@ sys.path.append(pyt_path)
 
 import os.path
 import os
-from collections import OrderedDict
 
 appDataPath = os.getenv('APPDATA')
 bbPath = appDataPath + r"\Dynamo\0.8\packages\Bumblebee\extra"
@@ -94,23 +93,34 @@ if runMe:
 	try:
 		errorReport = None
 		message = "Success!"
+		# check if excel is running
 		if LiveStream() != None:
 			xlApp = LiveStream()
+			# excel is running and data is being written to single sheet
 			if not isinstance(data, list):
 				wb = xlApp.ActiveWorkbook
-				ws = xlApp.Sheets(data.SheetName())
+				try:
+					ws = xlApp.Sheets(data.SheetName())
+				# if sheet with given name doesn't exist it will be added
+				except:
+					ws = wb.Sheets.Add(After = wb.Sheets(wb.Sheets.Count), Count = 1)
+					ws.Name = data.SheetName()
 				WriteData(ws, data.Data(), byColumn, data.Origin())
+			# excel is running and data is being written to multiple sheets
 			else:
 				wb = xlApp.ActiveWorkbook
-				sheetNames = list(OrderedDict.fromkeys([x.SheetName() for x in data]))
-				if len(sheetNames) > wb.Sheets.Count:
-					wb.Sheets.Add(After = wb.Sheets(wb.Sheets.Count), Count = len(sheetNames)-1)
-				for i in range(0,len(sheetNames),1):
-					wb.Worksheets[i+1].Name = sheetNames[i]
 				for i in data:
-					ws = xlApp.Sheets(i.SheetName())
+					try:
+						ws = xlApp.Sheets(i.SheetName())
+					# if sheet with given name doesn't exist it will be added
+					except:
+						ws = wb.Sheets.Add(After = wb.Sheets(wb.Sheets.Count), Count = 1)
+						ws.Name = i.SheetName()
 					WriteData(ws , i.Data(), byColumn, i.Origin())
+		else:
+			message = "No Excel session is open. Please open \nExcel to be able to use Live Excel Write node."
 	except:
+		# if error accurs anywhere in the process catch it
 		import traceback
 		errorReport = traceback.format_exc()
 else:
