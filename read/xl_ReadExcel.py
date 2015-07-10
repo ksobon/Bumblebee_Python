@@ -92,9 +92,10 @@ def ExitExcel(xlApp, wb, ws):
 	return None
 
 if runMe:
-	message = None
-	xlApp = SetUp(Excel.ApplicationClass())
 	try:
+		errorReport = None
+		message = None
+		xlApp = SetUp(Excel.ApplicationClass())
 		if os.path.isfile(str(filePath)):
 			xlApp.Workbooks.open(str(filePath))
 			if not isinstance(sheetName, list):
@@ -127,13 +128,15 @@ if runMe:
 	except:
 		xlApp.Quit()
 		Marshal.ReleaseComObject(xlApp)
-		message = "Something went wrong. Please check \n your inputs and try again."
+		# if error accurs anywhere in the process catch it
+		import traceback
+		errorReport = traceback.format_exc()
 		pass
 else:
-	message = "Set RunMe to True."
+	errorReport = "Set RunMe to True."
 
 #Assign your output to the OUT variable
-if message == None:
+if errorReport == None:
 	OUT = dataOut
 else:
-	OUT = message
+	OUT = errorReport
