@@ -61,50 +61,83 @@ def ExitExcel(filePath, xlApp, wb, ws):
 	CleanUp([ws,wb,xlApp])
 	return None
 
-if runMe:
-	message = None
-	xlApp = SetUp(Excel.ApplicationClass())
-	
-	if os.path.isfile(str(filePath)):
-		xlApp.Workbooks.open(str(filePath))
-		wb = xlApp.ActiveWorkbook
-		ws = xlApp.Sheets(sheetName)
-		
-		originX = ws.UsedRange.Row
-		originY = ws.UsedRange.Column
-		boundX = ws.UsedRange.Rows(ws.UsedRange.Rows.Count).Row
-		boundY = ws.UsedRange.Columns(ws.UsedRange.Columns.Count).Column
-		
-		dataOut = []
-		xlAfter = ws.Cells(originY, originX)
-		xlLookIn = -4163
-		xlLookAt = "&H2"
-		xlSearchOrder = "&H1"
-		xlSearchDirection = 1
-		xlMatchCase = False
-		xlMatchByte = False
-		xlSearchFormat = False
-		if isinstance(searchValues, list):
-			for key in searchValues:
-				cellAddress = ws.Cells.Find(key, xlAfter, xlLookIn, xlLookAt, xlSearchOrder, xlSearchDirection, xlMatchCase, xlMatchByte, xlSearchFormat).Address(False, False)
-				addressX = xlApp.Range(cellAddress).Row
-				addressY = xlApp.Range(cellAddress).Column
-				row = ws.Range[ws.Cells(addressX, originY), ws.Cells(addressX, boundY)].Value2
-				dataOut.append(row)
-		else:
-			cellAddress = ws.Cells.Find(searchValues, xlAfter, xlLookIn, xlLookAt, xlSearchOrder, xlSearchDirection, xlMatchCase, xlMatchByte, xlSearchFormat).Address(False, False)
-			addressX = xlApp.Range(cellAddress).Row
-			addressY = xlApp.Range(cellAddress).Column
-			row = ws.Range[ws.Cells(addressX, originY), ws.Cells(addressX, boundY)].Value2
-			dataOut = row
-		ExitExcel(filePath, xlApp, wb, ws)
+def LiveStream():
+	try:
+		xlApp = Marshal.GetActiveObject("Excel.Application")
+		xlApp.Visible = True
+		xlApp.DisplayAlerts = False
+		return xlApp
+	except:
+		return None
+
+def SearchValueGetRow(xlApp, ws, key):
+	# get spreadhseet extents to limit search context
+	originX = ws.UsedRange.Row
+	originY = ws.UsedRange.Column
+	boundX = ws.UsedRange.Rows(ws.UsedRange.Rows.Count).Row
+	boundY = ws.UsedRange.Columns(ws.UsedRange.Columns.Count).Column
+	# define search criteria
+	xlAfter = ws.Cells(originY, originX)
+	xlLookIn = -4163
+	xlLookAt = "&H2"
+	xlSearchOrder = "&H1"
+	xlSearchDirection = 1
+	xlMatchCase = False
+	xlMatchByte = False
+	xlSearchFormat = False
+	# get search value and return row 
+	# if value not found return None
+	cell = ws.Cells.Find(key, xlAfter, xlLookIn, xlLookAt, xlSearchOrder, xlSearchDirection, xlMatchCase, xlMatchByte, xlSearchFormat)
+	if cell != None:
+		cellAddress = cell.Address(False, False)
+		addressX = xlApp.Range(cellAddress).Row
+		addressY = xlApp.Range(cellAddress).Column
+		row = ws.Range[ws.Cells(addressX, originY), ws.Cells(addressX, boundY)].Value2
+		return row
 	else:
-		message = "Specified File doesn't exist."
-else:
-	message = "Run Me is set to False. Please set \nto True if you wish to write data \nto Excel."
+		return None
+try:
+	errorReport = None
+	if runMe:
+		message = None
+		dataOut = []
+		if filePath == None or LiveStream() != None:
+			# run excel in a live mode
+			xlApp = LiveStream()
+			wb = xlApp.ActiveWorkbook
+			ws = xlApp.Sheets(sheetName)
+			if isinstance(searchValues, list):
+				for key in searchValues:
+					dataOut.append(SearchValueGetRow(xlApp, ws, key))
+			else:
+				dataOut = SearchValueGetRow(xlApp, ws, key)
+		else:
+			try:
+				# open excel workbook specified at filePath
+				xlApp = SetUp(Excel.ApplicationClass())
+				if os.path.isfile(str(filePath)):
+					xlApp.Workbooks.open(str(filePath))
+					wb = xlApp.ActiveWorkbook
+					ws = xlApp.Sheets(sheetName)
+					if isinstance(searchValues, list):
+						for key in searchValues:
+							dataOut.append(SearchValueGetRow(xlApp, ws, key))
+					else:
+						dataOut = SearchValueGetRow(xlApp, ws, key)
+					ExitExcel(filePath, xlApp, wb, ws)
+			except:
+				xlApp.Quit()
+				Marshal.ReleaseComObject(xlApp)
+				pass
+	else:
+		errorReport = "Run Me is set to False. Please set \nto True if you wish to read data \nfrom Excel."
+except:
+		# if error accurs anywhere in the process catch it
+		import traceback
+		errorReport = traceback.format_exc()
 
 #Assign your output to the OUT variable
-if message == None:
+if errorReport == None:
 	OUT = dataOut
 else:
-	OUT = '\n'.join('{:^35}'.format(s) for s in message.split('\n'))
+	OUT = errorReport
