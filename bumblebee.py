@@ -34,6 +34,10 @@ import re
 def ProcessList(_func, _list):
     return map( lambda x: ProcessList(_func, x) if type(x)==list else _func(x), _list )
 
+def ListDepth(_list):
+	func = lambda x: isinstance(x, list) and max(map(func, x))+1
+	return func(_list)
+
 """ Misc Definitions"""
 
 def ConvertNumber(num):
@@ -74,6 +78,18 @@ def RGBToRGBLong(rgb):
     iValue = int(strValue, 16)
     return iValue
 
+def MakeDataObject(sheetName=None, origin=None, data=None):
+	dataObject = BBData()
+	if sheetName != None:
+		dataObject.sheetName = sheetName
+	if origin != None:
+		dataObject.origin = origin
+	if data != None:
+		dataObject.data = data
+	return dataObject
+
+""" Type Enumerators """
+"""
 def GetPatternType(key):
     keys = ["xlCheckerBoard", "xlCrissCross", "xlDarkDiagonalDown", "xlGrey16", "xlGray25", 
 	    "xlGray50", "xlGray75", "xlGray8", "xlGrid", "xlDarkHorizontal", 
@@ -88,35 +104,16 @@ def GetPatternType(key):
     else:
 	    return None
 
-class BBFillStyle(object):
-
-    def __init__(self, patternType=None, backgroundColor=None, patternColor=None, opacity=None, bevelType=None):
-        self.patternType = patternType
-        self.backgroundColor = backgroundColor
-        self.patternColor = patternColor
-        self.opacity = opacity
-        self.bevelType = bevelType
-    def PatternType(self):
-        if self.patternType == None:
-            return None
-        else:
-            return GetPatternType(self.patternType)
-    def BackgroundColor(self):
-        if self.backgroundColor == None:
-            return None
-        else:
-            return RGBToRGBLong((self.backgroundColor.Blue, self.backgroundColor.Green, self.backgroundColor.Red))
-    def PatternColor(self):
-        if self.patternColor == None:
-            return None
-        else:
-            return RGBToRGBLong((self.patternColor.Blue, self.patternColor.Green, self.patternColor.Red))
-    def Opacity(self):
-        if self.opacity == None:
-            return None
-    def BevelType(self):
-        if self.bevelType == None:
-            return None
+def GetLabelPositionType(key):
+    keys = ["Above", "Below", "BestFit", "Center", "Custom", "InsideBase", "InsideEnd", "Left", "Mixed", "OutsideEnd", "Right"]
+    values = [0, 1, 5, -4108, 7, 4, 3, -4131, 6, 2, -4152]
+    d = dict()
+    for i in range(len(keys)):
+        d[keys[i]] = values[i]
+    if key in d:
+	return d[key]
+    else:
+	return None
 
 def GetTextHorJustType(key):
     keys = ["Left", "Center", "Right"]
@@ -139,6 +136,118 @@ def GetTextVerJustType(key):
 	return d[key]
     else:
 	return None
+
+def GetLineType(key):
+    keys = ["Continuous", "Dash", "DashDot", "DashDotDot", "RoundDot", "SquareDotMSO", "LongDash", "DoubleXL", "NoneXL"]
+    values = [1, -4115, 4, 5, -4118, -4118, -4115, -4119, -4142]
+    d = dict()
+    for i in range(len(keys)):
+        d[keys[i]] = values[i]
+    if key in d:
+	return d[key]
+    else:
+	return None
+
+def GetLineWeight(key):
+    keys = ["Hairline", "Medium", "Thick", "Thin"]
+    values = [1, -4138, 4, 2]
+    d = dict()
+    for i in range(len(keys)):
+        d[keys[i]] = values[i]
+    if key in d:
+	return d[key]
+    else:
+	return None
+
+def GetOperatorType(key):
+    keys = ["Equal", "NotEqual", "Greater", "GreaterEqual", "Less", "LessEqual", "Between", "NotBetween"]
+    values = [3, 4, 5, 7, 6, 8, 1, 2]
+    d = dict()
+    for i in range(len(keys)):
+        d[keys[i]] = values[i]
+    if key in d:
+	return d[key]
+    else:
+	return None
+
+def GetLegendPosition(key):
+    keys = ["Bottom", "Upper Right Corner", "Custom", "Left", "Right", "Top"]
+    values = [-4107, 2, -4161, -4131, -4152, -4160]
+    d = dict()
+    for i in range(len(keys)):
+        d[keys[i]] = values[i]
+    if key in d:
+	return d[key]
+    else:
+	return None
+
+def GetPieChartType(key):
+    keys = ["3dPie", "3dPieExploded", "Pie", "PieExploded"]
+    values = [-4102, 70, 5, 69]
+    d = dict()
+    for i in range(len(keys)):
+        d[keys[i]] = values[i]
+    if key in d:
+	return d[key]
+    else:
+	return None
+
+def GetLineChartType(key):
+    keys = ["Line", "LineStacked", "LineStacked100", "3dLine"]
+    values = [4, 63, 64, -4101]
+    d = dict()
+    for i in range(len(keys)):
+        d[keys[i]] = values[i]
+    if key in d:
+	return d[key]
+    else:
+	return None
+
+def GetDirectionType(key):
+    keys = ["LeftToRight", "RightToLeft", "Context"]
+    values = [-5003, -5004, -5002]
+    d = dict()
+    for i in range(len(keys)):
+        d[keys[i]] = values[i]
+    if key in d:
+	return d[key]
+    else:
+	return None
+
+def GetColorScaleCriteriaType(key):
+    keys = ["LowestValue", "Number", "Percent", "Formula", "Percentile", "HighestValue", "AutomaticMax", "AutomaticMin", "None"]
+    values = [1, 0, 3, 4, 5, 2, 7, 6, -1]
+    d = dict()
+    for i in range(len(keys)):
+        d[keys[i]] = values[i]
+    if key in d:
+	return d[key]
+    else:
+	return None
+"""
+""" Styles classes """
+
+class BBFillStyle(object):
+
+    def __init__(self, patternType=None, backgroundColor=None, patternColor=None):
+        self.patternType = patternType
+        self.backgroundColor = backgroundColor
+        self.patternColor = patternColor
+    def PatternType(self):
+        if self.patternType == None:
+            return None
+        else:
+            return self.patternType
+    def BackgroundColor(self):
+        if self.backgroundColor == None:
+            return None
+        else:
+            return RGBToRGBLong((self.backgroundColor.Blue, self.backgroundColor.Green, self.backgroundColor.Red))
+    def PatternColor(self):
+        if self.patternColor == None:
+            return None
+        else:
+            return RGBToRGBLong((self.patternColor.Blue, self.patternColor.Green, self.patternColor.Red))
 
 class BBTextStyle(object):
 
@@ -171,12 +280,12 @@ class BBTextStyle(object):
         if self.horizontalAlign == None:
             return None
         else:
-            return GetTextHorJustType(self.horizontalAlign)
+            return self.horizontalAlign
     def VerticalAlign(self):
         if self.verticalAlign == None:
             return None
         else:
-            return GetTextVerJustType(self.verticalAlign)
+            return self.verticalAlign
     def Bold(self):
         if self.bold == None:
             return None
@@ -198,28 +307,6 @@ class BBTextStyle(object):
         else:
             return self.strikethrough
 
-def GetLineType(key):
-    keys = ["Continuous", "Dash", "DashDot", "DashDotDot", "RoundDot", "SquareDotMSO", "LongDash", "DoubleXL", "NoneXL"]
-    values = [1, -4115, 4, 5, -4118, -4118, -4115, -4119, -4142]
-    d = dict()
-    for i in range(len(keys)):
-        d[keys[i]] = values[i]
-    if key in d:
-	return d[key]
-    else:
-	return None
-
-def GetLineWeight(key):
-    keys = ["Hairline", "Medium", "Thick", "Thin"]
-    values = [1, -4138, 4, 2]
-    d = dict()
-    for i in range(len(keys)):
-        d[keys[i]] = values[i]
-    if key in d:
-	return d[key]
-    else:
-	return None
-
 class BBBorderStyle(object):
 
     def __init__(self, lineType=None, weight=None, color=None):
@@ -230,12 +317,12 @@ class BBBorderStyle(object):
         if self.lineType == None:
             return None
         else:
-            return GetLineType(self.lineType)
+            return self.lineType
     def Weight(self):
         if self.weight == None:
             return None
         else:
-            return GetLineWeight(self.weight)
+            return self.weight
     def Color(self):
         if self.color == None:
             return None
@@ -249,16 +336,102 @@ class BBGraphicStyle(object):
         self.textStyle = textStyle
         self.borderStyle = borderStyle
 
-def GetOperatorType(key):
-    keys = ["Equal", "NotEqual", "Greater", "GreaterEqual", "Less", "LessEqual", "Between", "NotBetween"]
-    values = [3, 4, 5, 7, 6, 8, 1, 2]
-    d = dict()
-    for i in range(len(keys)):
-        d[keys[i]] = values[i]
-    if key in d:
-	return d[key]
-    else:
-	return None
+class BBLegendStyle(object):
+
+    def __init__(self, fillStyle=None, textStyle=None, borderStyle=None, position=None, labels=None):
+        self.fillStyle = fillStyle
+        self.textStyle = textStyle
+        self.borderStyle = borderStyle
+        self.position = position
+        self.labels = labels
+    def Position(self):
+        if self.position != None:
+            return self.position
+        else:
+            return None
+    def Labels(self):
+        if self.labels != None:
+            return xlRange(self.labels)
+        else:
+            return None
+
+class BBChartStyle(object):
+
+    def __init__(self, fillStyle=None, textStyle=None, borderStyle=None, roundCorners=None):
+        self.fillStyle = fillStyle
+        self.textStyle = textStyle
+        self.borderStyle = borderStyle
+        self.roundCorners = roundCorners
+    def RoundCorners(self):
+        if self.roundCorners != None:
+            return self.roundCorners
+        else:
+            return None
+
+class BBGraphStyle(object):
+
+    def __init__(self, fillStyle=None, textStyle=None, borderStyle=None, labelStyle=None, explosion=None):
+        self.fillStyle = fillStyle
+        self.textStyle = textStyle
+        self.borderStyle = borderStyle
+        self.labelStyle = labelStyle
+        self.explosion = explosion
+    def Explosion(self):
+        if self.explosion != None:
+            return self.explosion
+        else:
+            return None
+
+class BBLabelStyle(object):
+
+    def __init__(self, fillStyle=None, textStyle=None, borderStyle=None, seriesName=None, value=None, percentage=None, leaderLines=None, legendKey=None, separator=None, labelPosition=None):
+        self.fillStyle = fillStyle
+        self.textStyle = textStyle
+        self.borderStyle = borderStyle
+        self.seriesName = seriesName
+        self.value = value
+        self.percentage = percentage
+        self.leaderLines = leaderLines
+        self.legendKey = legendKey
+        self.separator = separator
+        self.labelPosition = labelPosition
+    def SeriesName(self):
+        if self.seriesName == None:
+            return None
+        else:
+            return self.seriesName
+    def Value(self):
+        if self.value == None:
+            return None
+        else:
+            return self.value
+    def Percentage(self):
+        if self.percentage == None:
+            return None
+        else:
+            return self.percentage
+    def LeaderLines(self):
+        if self.leaderLines == None:
+            return None
+        else:
+            return self.leaderLines
+    def LegendKey(self):
+        if self.legendKey == None:
+            return None
+        else:
+            return self.legendKey
+    def Separator(self):
+        if self.separator == None:
+            return None
+        else:
+            return self.separator
+    def LabelPosition(self):
+        if self.labelPosition == None:
+            return None
+        else:
+            return self.labelPosition
+
+""" Conditional Formatting Classes """
 
 class BBCellValueFormatCondition(object):
 
@@ -273,7 +446,7 @@ class BBCellValueFormatCondition(object):
         if self.operatorType == None:
             return None
         else:
-            return GetOperatorType(self.operatorType)
+            return self.operatorType
     def Values(self):
         if self.values == None:
             return None
@@ -307,17 +480,6 @@ class BBExpressionFormatCondition(object):
         else:
             return self.graphicStyle
 
-def GetColorScaleCriteriaType(key):
-    keys = ["LowestValue", "Number", "Percent", "Formula", "Percentile", "HighestValue", "AutomaticMax", "AutomaticMin", "None"]
-    values = [1, 0, 3, 4, 5, 2, 7, 6, -1]
-    d = dict()
-    for i in range(len(keys)):
-        d[keys[i]] = values[i]
-    if key in d:
-	return d[key]
-    else:
-	return None
-
 class BB2ColorScaleFormatCondition(object):
 
     def __init__(self, formatConditionType="2Color", minType=None, minValue=None, minColor=None, maxType=None, maxValue=None, maxColor=None):
@@ -334,7 +496,7 @@ class BB2ColorScaleFormatCondition(object):
         if self.minType == None:
             return None
         else:
-            return GetColorScaleCriteriaType(self.minType)
+            return self.minType
     def MinValue(self):
         if self.minValue == None:
             return None
@@ -349,7 +511,7 @@ class BB2ColorScaleFormatCondition(object):
         if self.maxType == None:
             return None
         else:
-            return GetColorScaleCriteriaType(self.maxType)
+            return self.maxType
     def MaxValue(self):
         if self.maxValue == None:
             return None
@@ -380,7 +542,7 @@ class BB3ColorScaleFormatCondition(object):
         if self.minType == None:
             return None
         else:
-            return GetColorScaleCriteriaType(self.minType)
+            return self.minType
     def MinValue(self):
         if self.minValue == None:
             return None
@@ -395,7 +557,7 @@ class BB3ColorScaleFormatCondition(object):
         if self.midType == None:
             return None
         else:
-            return GetColorScaleCriteriaType(self.midType)
+            return self.midType
     def MidValue(self):
         if self.midValue == None:
             return None
@@ -410,7 +572,7 @@ class BB3ColorScaleFormatCondition(object):
         if self.maxType == None:
             return None
         else:
-            return GetColorScaleCriteriaType(self.maxType)
+            return self.maxType
     def MaxValue(self):
         if self.maxValue == None:
             return None
@@ -456,17 +618,6 @@ class BBTopPercentileFormatCondition(object):
         else:
             return self.graphicStyle
 
-def GetDirectionType(key):
-    keys = ["LeftToRight", "RightToLeft", "Context"]
-    values = [-5003, -5004, -5002]
-    d = dict()
-    for i in range(len(keys)):
-        d[keys[i]] = values[i]
-    if key in d:
-	return d[key]
-    else:
-	return None
-
 class BBDataBarFormatCondition(object):
 
     def __init__(self, formatConditionType="DataBar", minType=None, minValue=None, maxType=None, maxValue=None, directionType=None, gradientFill=None, fillColor=None, borderColor=None):
@@ -485,7 +636,7 @@ class BBDataBarFormatCondition(object):
         if self.minType == None:
             return None
         else:
-            return GetColorScaleCriteriaType(self.minType)
+            return self.minType
     def MinValue(self):
         if self.minValue == None:
             return None
@@ -495,7 +646,7 @@ class BBDataBarFormatCondition(object):
         if self.maxType == None:
             return None
         else:
-            return GetColorScaleCriteriaType(self.maxType)
+            return self.maxType
     def MaxValue(self):
         if self.maxValue == None:
             return None
@@ -505,7 +656,7 @@ class BBDataBarFormatCondition(object):
         if self.directionType == None:
             return None
         else:
-            return GetDirectionType(self.directionType)
+            return self.directionType
     def GradientFill(self):
         if self.gradientFill == None:
             return None
@@ -525,9 +676,7 @@ class BBDataBarFormatCondition(object):
         else:
             return RGBToRGBLong((self.borderColor.Blue, self.borderColor.Green, self.borderColor.Red))
 
-def ListDepth(_list):
-	func = lambda x: isinstance(x, list) and max(map(func, x))+1
-	return func(_list)
+""" Data Classes """
 
 class BBData(object):
 
@@ -552,13 +701,3 @@ class BBData(object):
             return None
         else:
             return self.data
-
-def MakeDataObject(sheetName=None, origin=None, data=None):
-	dataObject = BBData()
-	if sheetName != None:
-		dataObject.sheetName = sheetName
-	if origin != None:
-		dataObject.origin = origin
-	if data != None:
-		dataObject.data = data
-	return dataObject
