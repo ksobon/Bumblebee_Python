@@ -131,7 +131,7 @@ if runMe:
 		# get chart object
 		xlChart = chartObject.Chart
 		# set chart type
-		xlChart.ChartType = bb.GetPieChartType(chartType)
+		xlChart.ChartType = chartType
 		# set chart data source range
 		dataOrigin = ws.Cells(bb.xlRange(dataRange)[1], bb.xlRange(dataRange)[0])
 		dataExtent = ws.Cells(bb.xlRange(dataRange)[3], bb.xlRange(dataRange)[2])
