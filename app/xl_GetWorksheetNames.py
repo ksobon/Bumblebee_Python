@@ -50,24 +50,32 @@ def ExitExcel(xlApp, wb):
 	CleanUp([wb,xlApp])
 	return None
 
-if runMe:
-	message = None
-	xlApp = SetUp(Excel.ApplicationClass())
-	if os.path.isfile(str(filePath)):
+try:
+	errorReport = None
+	if runMe:
+		message = None
 		try:
-			xlApp.Workbooks.open(str(filePath))
+			dataOut = []
+			xlApp = SetUp(Excel.ApplicationClass())
+			if os.path.isfile(str(filePath)):
+				xlApp.Workbooks.open(str(filePath))
+				wb = xlApp.ActiveWorkbook
+				for i in range(0, xlApp.Sheets.Count, 1):
+					dataOut.append(xlApp.Sheets(i+1).Name)
+			ExitExcel(xlApp, wb)
 		except:
-			message = "Excel might be open. Please close it!"
-		wb = xlApp.ActiveWorkbook
-		dataOut = []
-		for i in range(0, xlApp.Sheets.Count, 1):
-			dataOut.append(xlApp.Sheets(i+1).Name)
-	ExitExcel(xlApp, wb)	
-else:
-	message = "Set RunMe to True."
+			xlApp.Quit()
+			Marshal.ReleaseComObject(xlApp)
+			pass
+	else:
+		errorReport = "Set RunMe to True."
+except:
+		# if error accurs anywhere in the process catch it
+		import traceback
+		errorReport = traceback.format_exc()
 
 #Assign your output to the OUT variable
-if message == None:
+if errorReport == None:
 	OUT = dataOut
 else:
-	OUT = message
+	OUT = errorReport
