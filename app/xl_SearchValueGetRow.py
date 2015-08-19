@@ -101,7 +101,7 @@ try:
 	if runMe:
 		message = None
 		dataOut = []
-		if filePath == None or LiveStream() != None:
+		if filePath == None:
 			# run excel in a live mode
 			xlApp = LiveStream()
 			wb = xlApp.ActiveWorkbook
