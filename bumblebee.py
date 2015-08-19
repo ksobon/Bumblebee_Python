@@ -78,153 +78,6 @@ def RGBToRGBLong(rgb):
     iValue = int(strValue, 16)
     return iValue
 
-def MakeDataObject(sheetName=None, origin=None, data=None):
-	dataObject = BBData()
-	if sheetName != None:
-		dataObject.sheetName = sheetName
-	if origin != None:
-		dataObject.origin = origin
-	if data != None:
-		dataObject.data = data
-	return dataObject
-
-""" Type Enumerators """
-"""
-def GetPatternType(key):
-    keys = ["xlCheckerBoard", "xlCrissCross", "xlDarkDiagonalDown", "xlGrey16", "xlGray25", 
-	    "xlGray50", "xlGray75", "xlGray8", "xlGrid", "xlDarkHorizontal", 
-	    "xlLightDiagonalDown", "xlLightHorizontal", "xlLightDiagonalUp", "xlLightVertical", "xlNone", 
-	    "xlSemiGray75", "xlSolid", "xlDarkDiagonalUp", "xlDarkVertical"]
-    values = [9, 16, -4121, 17, -4124, -4124, -4126, 18, 15, -4128, 13, 11, 14, 12, -4142, 10, 1, -4162, -4166]
-    d = dict()
-    for i in range(len(keys)):
-	    d[keys[i]] = values[i]
-    if key in d:
-	    return d[key]
-    else:
-	    return None
-
-def GetLabelPositionType(key):
-    keys = ["Above", "Below", "BestFit", "Center", "Custom", "InsideBase", "InsideEnd", "Left", "Mixed", "OutsideEnd", "Right"]
-    values = [0, 1, 5, -4108, 7, 4, 3, -4131, 6, 2, -4152]
-    d = dict()
-    for i in range(len(keys)):
-        d[keys[i]] = values[i]
-    if key in d:
-	return d[key]
-    else:
-	return None
-
-def GetTextHorJustType(key):
-    keys = ["Left", "Center", "Right"]
-    values = [-4131, -4108, -4152]
-    d = dict()
-    for i in range(len(keys)):
-        d[keys[i]] = values[i]
-    if key in d:
-	return d[key]
-    else:
-	return None
-
-def GetTextVerJustType(key):
-    keys = ["Bottom", "Center", "Top"]
-    values = [-4017, -4108, -4160]
-    d = dict()
-    for i in range(len(keys)):
-        d[keys[i]] = values[i]
-    if key in d:
-	return d[key]
-    else:
-	return None
-
-def GetLineType(key):
-    keys = ["Continuous", "Dash", "DashDot", "DashDotDot", "RoundDot", "SquareDotMSO", "LongDash", "DoubleXL", "NoneXL"]
-    values = [1, -4115, 4, 5, -4118, -4118, -4115, -4119, -4142]
-    d = dict()
-    for i in range(len(keys)):
-        d[keys[i]] = values[i]
-    if key in d:
-	return d[key]
-    else:
-	return None
-
-def GetLineWeight(key):
-    keys = ["Hairline", "Medium", "Thick", "Thin"]
-    values = [1, -4138, 4, 2]
-    d = dict()
-    for i in range(len(keys)):
-        d[keys[i]] = values[i]
-    if key in d:
-	return d[key]
-    else:
-	return None
-
-def GetOperatorType(key):
-    keys = ["Equal", "NotEqual", "Greater", "GreaterEqual", "Less", "LessEqual", "Between", "NotBetween"]
-    values = [3, 4, 5, 7, 6, 8, 1, 2]
-    d = dict()
-    for i in range(len(keys)):
-        d[keys[i]] = values[i]
-    if key in d:
-	return d[key]
-    else:
-	return None
-
-def GetLegendPosition(key):
-    keys = ["Bottom", "Upper Right Corner", "Custom", "Left", "Right", "Top"]
-    values = [-4107, 2, -4161, -4131, -4152, -4160]
-    d = dict()
-    for i in range(len(keys)):
-        d[keys[i]] = values[i]
-    if key in d:
-	return d[key]
-    else:
-	return None
-
-def GetPieChartType(key):
-    keys = ["3dPie", "3dPieExploded", "Pie", "PieExploded"]
-    values = [-4102, 70, 5, 69]
-    d = dict()
-    for i in range(len(keys)):
-        d[keys[i]] = values[i]
-    if key in d:
-	return d[key]
-    else:
-	return None
-
-def GetLineChartType(key):
-    keys = ["Line", "LineStacked", "LineStacked100", "3dLine"]
-    values = [4, 63, 64, -4101]
-    d = dict()
-    for i in range(len(keys)):
-        d[keys[i]] = values[i]
-    if key in d:
-	return d[key]
-    else:
-	return None
-
-def GetDirectionType(key):
-    keys = ["LeftToRight", "RightToLeft", "Context"]
-    values = [-5003, -5004, -5002]
-    d = dict()
-    for i in range(len(keys)):
-        d[keys[i]] = values[i]
-    if key in d:
-	return d[key]
-    else:
-	return None
-
-def GetColorScaleCriteriaType(key):
-    keys = ["LowestValue", "Number", "Percent", "Formula", "Percentile", "HighestValue", "AutomaticMax", "AutomaticMin", "None"]
-    values = [1, 0, 3, 4, 5, 2, 7, 6, -1]
-    d = dict()
-    for i in range(len(keys)):
-        d[keys[i]] = values[i]
-    if key in d:
-	return d[key]
-    else:
-	return None
-"""
 """ Styles classes """
 
 class BBFillStyle(object):
@@ -678,6 +531,26 @@ class BBDataBarFormatCondition(object):
 
 """ Data Classes """
 
+def MakeDataObject(sheetName=None, origin=None, data=None):
+	dataObject = BBData()
+	if sheetName != None:
+		dataObject.sheetName = sheetName
+	if origin != None:
+		dataObject.origin = origin
+	if data != None:
+		dataObject.data = data
+	return dataObject
+
+def MakeStyleObject(sheetName=None, xlRange=None, graphicStyle=None):
+	styleObject = BBStyle()
+	if sheetName != None:
+		styleObject.sheetName = sheetName
+	if xlRange != None:
+		styleObject.cellRange = xlRange
+	if graphicStyle != None:
+		styleObject.graphicStyle = graphicStyle
+	return styleObject
+
 class BBData(object):
 
     def __init__(self, sheetName=None, origin=None, data=None):
@@ -701,3 +574,27 @@ class BBData(object):
             return None
         else:
             return self.data
+
+class BBStyle(object):
+
+    def __init__(self, sheetName=None, cellRange=None, graphicStyle=None):
+        self.sheetName = sheetName
+        self.cellRange = cellRange
+        self.graphicStyle = graphicStyle
+    def Depth(self):
+        return ListDepth(self.graphicStyle)
+    def SheetName(self):
+        if self.sheetName == None:
+            return None
+        else:
+            return self.sheetName
+    def CellRange(self):
+        if self.cellRange == None:
+            return None
+        else:
+            return self.cellRange
+    def GraphicStyle(self):
+        if self.graphicStyle == None:
+            return None
+        else:
+            return self.graphicStyle
