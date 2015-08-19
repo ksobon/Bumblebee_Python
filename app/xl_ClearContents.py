@@ -43,6 +43,15 @@ def SetUp(xlApp):
 	xlApp.ScreenUpdating = False
 	return xlApp
 
+def LiveStream():
+	try:
+		xlApp = Marshal.GetActiveObject("Excel.Application")
+		xlApp.Visible = True
+		xlApp.DisplayAlerts = False
+		return xlApp
+	except:
+		return None
+
 def ExitExcel(filePath, xlApp, wb, ws):
 	# clean up before exiting excel, if any COM object remains
 	# unreleased then excel crashes on open following time
@@ -60,41 +69,61 @@ def ExitExcel(filePath, xlApp, wb, ws):
 	CleanUp([ws,wb,xlApp])
 	return None
 
+def ClearExcel(ws, cellRange, clearContents, clearFormats):
+	# get origin and extent from range string
+	# if no range supplied apply formatting to entire sheet
+	if cellRange != None:
+		origin = ws.Cells(bb.xlRange(cellRange)[1], bb.xlRange(cellRange)[0])
+		extent = ws.Cells(bb.xlRange(cellRange)[3], bb.xlRange(cellRange)[2])
+	else:
+		origin = ws.Cells(ws.UsedRange.Row, ws.UsedRange.Column)
+		extent = ws.Cells(ws.UsedRange.Rows(ws.UsedRange.Rows.Count).Row, ws.UsedRange.Columns(ws.UsedRange.Columns.Count).Column)
+	if clearContents:
+		ws.Range[origin, extent].ClearContents()
+	if clearFormats:
+		ws.Range[origin, extent].ClearFormats()
+	return ws
+
 if runMe:
 	message = None
 	try:
-		xlApp = SetUp(Excel.ApplicationClass())
-		if os.path.isfile(str(filePath)):
-			xlApp.Workbooks.open(str(filePath))
+		errorReport = None
+		message = "Success!"
+		if filePath == None:
+			# run excel in a live mode
+			xlApp = LiveStream()
 			wb = xlApp.ActiveWorkbook
-			ws = xlApp.Sheets(sheetName)
-			if cellRange != None:
-				origin = ws.Cells(bb.xlRange(cellRange)[1], bb.xlRange(cellRange)[0])
-				extent = ws.Cells(bb.xlRange(cellRange)[3], bb.xlRange(cellRange)[2])
+			if sheetName == None:
+				ws = xlApp.ActiveSheet
 			else:
-				origin = ws.Cells(ws.UsedRange.Row, ws.UsedRange.Column)
-				extent = ws.Cells(ws.UsedRange.Rows(ws.UsedRange.Rows.Count).Row, ws.UsedRange.Columns(ws.UsedRange.Columns.Count).Column)
-			# clear contents of the cells only
-			if clearContent:
-				ws.Range[origin, extent].ClearContents()
-			# clear cell formatting settings only
-			if clearFormat:
-				ws.Range[origin, extent].ClearFormats()
-			Marshal.ReleaseComObject(extent)
-			Marshal.ReleaseComObject(origin)
-			ExitExcel(filePath, xlApp, wb, ws)
+				ws = xlApp.Sheets(sheetName)
+			ClearExcel(ws, cellRange, clearContent, clearFormat)
 		else:
-			message = "Specified file doesn't exists."	
+			try:
+				xlApp = SetUp(Excel.ApplicationClass())
+				if os.path.isfile(str(filePath)):
+					xlApp.Workbooks.open(str(filePath))
+					wb = xlApp.ActiveWorkbook
+					ws = xlApp.Sheets(sheetName)
+					ClearExcel(ws, cellRange, clearContent, clearFormat)
+					#Marshal.ReleaseComObject(extent)
+					#Marshal.ReleaseComObject(origin)
+					ExitExcel(filePath, xlApp, wb, ws)
+				else:
+					message = "Specified file doesn't exists."
+			except:
+				xlApp.Quit()
+				Marshal.ReleaseComObject(xlApp)
 	except:
-		xlApp.Quit()
-		Marshal.ReleaseComObject(xlApp)
-		message = "Something went wrong. Please check \n your inputs and try again. Make sure that Excel is closed when attempting to override the file."
+		# if error accurs anywhere in the process catch it
+		import traceback
+		errorReport = traceback.format_exc()
 		pass
 else:
+	errorReport = None
 	message = "Run Me is set to False. Please set \nto True if you wish to write data \nto Excel."
 
-#Assign your output to the OUT variable
-if message == None:
-	OUT = "Success!"
+if errorReport == None:
+	OUT = OUT = '\n'.join('{:^35}'.format(s) for s in message.split('\n'))
 else:
-	OUT = '\n'.join('{:^35}'.format(s) for s in message.split('\n'))
+	OUT = errorReport
