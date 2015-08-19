@@ -133,7 +133,7 @@ try:
 				Marshal.ReleaseComObject(xlApp)
 				pass
 	else:
-		errorReport = "Run Me is set to False. Please set \nto True if you wish to read data \nfrom Excel."
+		errorReport = "Set RunMe to True."
 except:
 		# if error accurs anywhere in the process catch it
 		import traceback
