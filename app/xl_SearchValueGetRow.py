@@ -105,7 +105,10 @@ try:
 			# run excel in a live mode
 			xlApp = LiveStream()
 			wb = xlApp.ActiveWorkbook
-			ws = xlApp.Sheets(sheetName)
+			if sheetName == None:
+				ws = xlApp.ActiveSheet
+			else:
+				ws = xlApp.Sheets(sheetName)
 			if isinstance(searchValues, list):
 				for key in searchValues:
 					dataOut.append(SearchValueGetRow(xlApp, ws, key))
