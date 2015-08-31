@@ -68,6 +68,15 @@ def ExitExcel(filePath, xlApp, wb, ws):
 	CleanUp([ws,wb,xlApp])
 	return None
 
+def LiveStream():
+	try:
+		xlApp = Marshal.GetActiveObject("Excel.Application")
+		xlApp.Visible = True
+		xlApp.DisplayAlerts = False
+		return xlApp
+	except:
+		return None
+
 def ConditionFormatCells(origin, extent, ws, formatConditions):
 	
 	def AddFormatCondition(origin=None, extent=None, ws=None, formatConditions=None, index=None):
@@ -100,6 +109,9 @@ def ConditionFormatCells(origin, extent, ws, formatConditions):
 			ws.Range[origin, extent].FormatConditions(index).Percent = formatConditions.Percent()
 			ws.Range[origin, extent].FormatConditions(index).Rank = formatConditions.Rank()
 			ws.Range[origin, extent].FormatConditions(index).TopBottom = formatConditions.TopBottom()
+
+		if fcType == "DataBar":
+			ws.Range[origin, extent].FormatConditions.AddDataBar()
 
 		return ws
 		
@@ -134,6 +146,27 @@ def ConditionFormatCells(origin, extent, ws, formatConditions):
 			ws.Range[origin, extent].FormatConditions(index).ColorScaleCriteria(3).FormatColor.Color = formatConditions.MaxColor()
 			if formatConditions.MaxType() != 2:
 				ws.Range[origin, extent].FormatConditions(index).ColorScaleCriteria(3).Value = formatConditions.MaxValue()
+		
+		elif formatConditions.FormatConditionType() == "DataBar":
+			if formatConditions.MinType() != 1 and formatConditions.MinType() != 6:
+				ws.Range[origin, extent].FormatConditions(index).MinPoint.Modify(newtype = formatConditions.MinType(), newvalue = formatConditions.MinValue())
+			else:
+				ws.Range[origin, extent].FormatConditions(index).MinPoint.Modify(newtype = formatConditions.MinType())
+			if formatConditions.MaxType() != 2 and formatConditions.MaxType() != 7:
+				ws.Range[origin, extent].FormatConditions(index).MaxPoint.Modify(newtype = formatConditions.MaxType(), newvalue = formatConditions.MaxValue())
+			else:
+				ws.Range[origin, extent].FormatConditions(index).MaxPoint.Modify(newtype = formatConditions.MaxType())
+			
+			if formatConditions.BorderColor() != None:
+				ws.Range[origin, extent].FormatConditions(index).BarBorder.Type = 1
+			else:
+				ws.Range[origin, extent].FormatConditions(index).BarBorder.Type = 0
+			ws.Range[origin, extent].FormatConditions(index).ShowValue = True
+			ws.Range[origin, extent].FormatConditions(index).BarFillType = formatConditions.GradientFill()
+			ws.Range[origin, extent].FormatConditions(index).BarColor.Color = formatConditions.FillColor()
+			ws.Range[origin, extent].FormatConditions(index).BarBorder.Color.Color = formatConditions.BorderColor()
+			ws.Range[origin, extent].FormatConditions(index).Direction = formatConditions.DirectionType()
+
 		else:
 			fillStyle = formatConditions.GraphicStyle().fillStyle
 			textStyle = formatConditions.GraphicStyle().textStyle
@@ -160,38 +193,61 @@ def ConditionFormatCells(origin, extent, ws, formatConditions):
 	
 if runMe:
 	message = None
-	xlApp = SetUp(Excel.ApplicationClass())
 	try:
-		if os.path.isfile(str(filePath)):
-			xlApp.Workbooks.open(str(filePath))
+		errorReport = None
+		message = "Success!"
+		if filePath == None:
+			# run excel in live mode
+			xlApp = LiveStream()
 			wb = xlApp.ActiveWorkbook
-			ws = xlApp.Sheets(sheetName)
+			if sheetName == None:
+				ws = xlApp.ActiveSheet
+			else:
+				ws = xlApp.Sheets(sheetName)
 			if not isinstance(cellRange, list):
 				origin = ws.Cells(bb.xlRange(cellRange)[1], bb.xlRange(cellRange)[0])
 				extent = ws.Cells(bb.xlRange(cellRange)[3], bb.xlRange(cellRange)[2])
 				ConditionFormatCells(origin, extent, ws, formatConditions)
-				Marshal.ReleaseComObject(extent)
-				Marshal.ReleaseComObject(origin)
 			else:
 				for index, (range, format) in enumerate(zip(cellRange, formatConditions)):
 					origin = ws.Cells(bb.xlRange(range)[1], bb.xlRange(range)[0])
 					extent = ws.Cells(bb.xlRange(range)[3], bb.xlRange(range)[2])
 					ConditionFormatCells(origin, extent, ws, format)
-					Marshal.ReleaseComObject(extent)
-					Marshal.ReleaseComObject(origin)
-			ExitExcel(filePath, xlApp, wb, ws)
 		else:
-			message = "No file exists. Please Use Write Data Node to create file first before formatting it."
+			try:
+				xlApp = SetUp(Excel.ApplicationClass())		
+				if os.path.isfile(str(filePath)):
+					xlApp.Workbooks.open(str(filePath))
+					wb = xlApp.ActiveWorkbook
+					ws = xlApp.Sheets(sheetName)
+					if not isinstance(cellRange, list):
+						origin = ws.Cells(bb.xlRange(cellRange)[1], bb.xlRange(cellRange)[0])
+						extent = ws.Cells(bb.xlRange(cellRange)[3], bb.xlRange(cellRange)[2])
+						ConditionFormatCells(origin, extent, ws, formatConditions)
+						Marshal.ReleaseComObject(extent)
+						Marshal.ReleaseComObject(origin)
+					else:
+						for index, (range, format) in enumerate(zip(cellRange, formatConditions)):
+							origin = ws.Cells(bb.xlRange(range)[1], bb.xlRange(range)[0])
+							extent = ws.Cells(bb.xlRange(range)[3], bb.xlRange(range)[2])
+							ConditionFormatCells(origin, extent, ws, format)
+							Marshal.ReleaseComObject(extent)
+							Marshal.ReleaseComObject(origin)
+					ExitExcel(filePath, xlApp, wb, ws)
+			except:
+				xlApp.Quit()
+				Marshal.ReleaseComObject(xlApp)
 	except:
-		xlApp.Quit()
-		Marshal.ReleaseComObject(xlApp)
-		message = "Something went wrong. Please check \n your inputs and try again."
+		# if error accurs anywhere in the process catch it
+		import traceback
+		errorReport = traceback.format_exc()
 		pass
 else:
+	errorReport = None
 	message = "Run Me is set to False. Please set \nto True if you wish to write data \nto Excel."
 
 #Assign your output to the OUT variable
-if message == None:
-	OUT = "Success!"
+if errorReport == None:
+	OUT = message
 else:
-	OUT = '\n'.join('{:^35}'.format(s) for s in message.split('\n'))
+	OUT = errorReport
