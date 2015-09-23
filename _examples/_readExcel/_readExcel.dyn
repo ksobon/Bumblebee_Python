@@ -1,0 +1,44 @@
+<Workspace Version="0.8.0.950" X="-121.47455359491" Y="-308.335265116626" zoom="1.23489149706355" Name="Home" RunType="Manual" RunPeriod="100" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Function guid="0040df06-4f1e-45df-a9a2-e880045ca02c" type="Dynamo.Nodes.Function" nickname="Read Excel" x="634.054737316642" y="388.025880006211" isVisible="true" isUpstreamVisible="true" lacing="Shortest">
+      <PortInfo index="1" default="True" />
+      <PortInfo index="3" default="True" />
+      <PortInfo index="4" default="True" />
+      <PortInfo index="5" default="True" />
+      <ID value="6cf7f3b9-69ab-40da-b41c-62068370e1b8" />
+      <Name value="Read Excel" />
+      <Description value="This node will read an excel file. You can read an entore sheet contents, read from specific origin cell, read only specific range, or do all of the former for multiple sheets at the same time. " />
+      <Inputs>
+        <Input value="File Path" />
+        <Input value="RunIt" />
+        <Input value="SheetName" />
+        <Input value="ByColumn" />
+        <Input value="Origin" />
+        <Input value="Extent" />
+      </Inputs>
+      <Outputs>
+        <Output value="OUT" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSCore.File.Filename guid="1e229c58-e50e-455a-ace9-d7d909346fcf" type="DSCore.File.Filename" nickname="File Path" x="257.80314697646" y="386.018207952548" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.String>C:\Users\ksobon\Desktop\_testExcelExport_01.xlsx</System.String>
+    </DSCore.File.Filename>
+    <DSCoreNodesUI.BoolSelector guid="6859130d-18b2-4269-9621-83f1deb29261" type="DSCoreNodesUI.BoolSelector" nickname="Boolean" x="438.496264829946" y="472.250339621381" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Boolean>True</System.Boolean>
+    </DSCoreNodesUI.BoolSelector>
+    <DSCoreNodesUI.BoolSelector guid="17e8b15e-1c70-421d-9650-7756e2cbeece" type="DSCoreNodesUI.BoolSelector" nickname="Boolean" x="438.496264829946" y="527.933728910798" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Boolean>True</System.Boolean>
+    </DSCoreNodesUI.BoolSelector>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="6dbe6261-57c4-4fbd-acf2-23686e954af6" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="463.496264829946" y="584.755242370654" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="&quot;Sheet1&quot;;" ShouldFocus="false" />
+    <Dynamo.Nodes.Watch guid="b68334d3-4df2-488c-9ef6-858a8794d886" type="Dynamo.Nodes.Watch" nickname="Watch" x="857.275959229924" y="388.025880006211" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="0040df06-4f1e-45df-a9a2-e880045ca02c" start_index="0" end="b68334d3-4df2-488c-9ef6-858a8794d886" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1e229c58-e50e-455a-ace9-d7d909346fcf" start_index="0" end="0040df06-4f1e-45df-a9a2-e880045ca02c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6859130d-18b2-4269-9621-83f1deb29261" start_index="0" end="0040df06-4f1e-45df-a9a2-e880045ca02c" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="17e8b15e-1c70-421d-9650-7756e2cbeece" start_index="0" end="0040df06-4f1e-45df-a9a2-e880045ca02c" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6dbe6261-57c4-4fbd-acf2-23686e954af6" start_index="0" end="0040df06-4f1e-45df-a9a2-e880045ca02c" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

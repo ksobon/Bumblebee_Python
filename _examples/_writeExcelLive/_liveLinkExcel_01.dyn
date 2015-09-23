@@ -1,0 +1,100 @@
+<Workspace Version="0.8.0.950" X="2285.46505908039" Y="-2172.80631316085" zoom="0.856400055555828" Name="Home" RunType="Manual" RunPeriod="100" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="List" resolvedName="DSCore.List" assemblyName="DSCoreNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.Function guid="d64fd483-da82-4060-8e4a-46ae0be652cb" type="Dynamo.Nodes.Function" nickname="BB Data" x="-2252.09646069103" y="2691.42876809987" isVisible="true" isUpstreamVisible="true" lacing="Shortest">
+      <PortInfo index="1" default="True" />
+      <ID value="ee2bfd6a-235b-4c14-a309-f5cb3e3e3227" />
+      <Name value="BB Data" />
+      <Description value="This node is a building block for different modes of writing to Excel files. You can combines this node into a list to write to multiple sheets or use just one to write to a single sheet. " />
+      <Inputs>
+        <Input value="SheetName" />
+        <Input value="Origin" />
+        <Input value="Data" />
+      </Inputs>
+      <Outputs>
+        <Output value="BB Data" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="ededb4f1-0d64-4019-8e94-84d6405de634" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-2459.27292433684" y="2667.49531885319" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="&quot;TestSheet1&quot;;" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="d837933b-5f58-4f60-9cf0-44b7247a64fc" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-2484.27292433684" y="2831.22116262796" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="{0..20, 10..20};" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="03112c29-c24c-4879-90ad-7f697f410548" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-2394.27292433684" y="2748.66419746554" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="&quot;A1&quot;;" ShouldFocus="false" />
+    <DSCoreNodesUI.BoolSelector guid="e8a71abe-6f89-4161-bbbf-e98bd1d38387" type="DSCoreNodesUI.BoolSelector" nickname="Boolean" x="-1819.44858113941" y="2892.95708689121" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Boolean>True</System.Boolean>
+    </DSCoreNodesUI.BoolSelector>
+    <DSCoreNodesUI.BoolSelector guid="c9ed1bf0-7ec6-4d74-90bb-3ca745fe09a4" type="DSCoreNodesUI.BoolSelector" nickname="Boolean" x="-1819.44858113941" y="2832.10277202354" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Boolean>True</System.Boolean>
+    </DSCoreNodesUI.BoolSelector>
+    <Dynamo.Nodes.Watch guid="1dfff7f2-8a3b-4b1f-abcc-91185822ecad" type="Dynamo.Nodes.Watch" nickname="Watch" x="-1410.73090088238" y="2867.28194892196" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="900e626f-8cf1-459b-9d88-1c306d537c29" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-2484.27292433684" y="3087.98964119528" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="{0..20, 10..20};" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="304faaba-b951-4699-8bc5-df2e12a8b4a1" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-2394.27292433684" y="3005.43267603286" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="&quot;A1&quot;;" ShouldFocus="false" />
+    <Dynamo.Nodes.Function guid="c67128ce-2cab-4380-95ea-4cc62f080098" type="Dynamo.Nodes.Function" nickname="BB Data" x="-2252.09646069103" y="2948.19724666719" isVisible="true" isUpstreamVisible="true" lacing="Shortest">
+      <PortInfo index="1" default="True" />
+      <ID value="ee2bfd6a-235b-4c14-a309-f5cb3e3e3227" />
+      <Name value="BB Data" />
+      <Description value="This node is a building block for different modes of writing to Excel files. You can combines this node into a list to write to multiple sheets or use just one to write to a single sheet. " />
+      <Inputs>
+        <Input value="SheetName" />
+        <Input value="Origin" />
+        <Input value="Data" />
+      </Inputs>
+      <Outputs>
+        <Output value="BB Data" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="ecb6a565-4d9d-4e61-91d0-c9181cb2bd71" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-2459.27292433684" y="2924.26379742051" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="&quot;TestSheet2&quot;;" ShouldFocus="false" />
+    <DSCoreNodesUI.CreateList guid="354c26c6-0d60-4c53-ac65-50b8c6c7cb36" type="DSCoreNodesUI.CreateList" nickname="List.Create" x="-2004.54055222453" y="2922.3119940992" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="3" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="062a0230-930b-44c6-9e97-c239e206a876" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-2484.27292433684" y="3349.64877752702" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="{0..20, 10..20};" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="31006ef1-6268-4c85-9a38-d840c7f521dd" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-2394.27292433684" y="3267.0918123646" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="&quot;D1&quot;;" ShouldFocus="false" />
+    <Dynamo.Nodes.Function guid="2e98139e-7e31-4eca-85c7-249b61f910ea" type="Dynamo.Nodes.Function" nickname="BB Data" x="-2252.09646069103" y="3209.85638299893" isVisible="true" isUpstreamVisible="true" lacing="Shortest">
+      <PortInfo index="1" default="True" />
+      <ID value="ee2bfd6a-235b-4c14-a309-f5cb3e3e3227" />
+      <Name value="BB Data" />
+      <Description value="This node is a building block for different modes of writing to Excel files. You can combines this node into a list to write to multiple sheets or use just one to write to a single sheet. " />
+      <Inputs>
+        <Input value="SheetName" />
+        <Input value="Origin" />
+        <Input value="Data" />
+      </Inputs>
+      <Outputs>
+        <Output value="BB Data" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="33e21bbc-2bac-4a86-9b96-883e1a9ed057" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-2467.27292433684" y="3185.92293375225" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="&quot;TestSheet45&quot;;" ShouldFocus="false" />
+    <Dynamo.Nodes.Function guid="6036a90b-94cd-4ecf-9e10-1a315836c89b" type="Dynamo.Nodes.Function" nickname="Live Write Excel" x="-1583.24941594845" y="2867.46128209768" isVisible="true" isUpstreamVisible="true" lacing="Shortest">
+      <PortInfo index="0" default="True" />
+      <PortInfo index="1" default="True" />
+      <ID value="313e7d1a-3408-4b9f-9264-42b1bb1aaf5f" />
+      <Name value="Live Write Excel" />
+      <Description value="This node will allow you to write to Excel file that is currently open and you will be able to see the results of your data stream live in excel. " />
+      <Inputs>
+        <Input value="RunIt" />
+        <Input value="ByColumn" />
+        <Input value="BBData" />
+      </Inputs>
+      <Outputs>
+        <Output value="OUT" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="d64fd483-da82-4060-8e4a-46ae0be652cb" start_index="0" end="354c26c6-0d60-4c53-ac65-50b8c6c7cb36" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ededb4f1-0d64-4019-8e94-84d6405de634" start_index="0" end="d64fd483-da82-4060-8e4a-46ae0be652cb" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d837933b-5f58-4f60-9cf0-44b7247a64fc" start_index="0" end="d64fd483-da82-4060-8e4a-46ae0be652cb" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="03112c29-c24c-4879-90ad-7f697f410548" start_index="0" end="d64fd483-da82-4060-8e4a-46ae0be652cb" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e8a71abe-6f89-4161-bbbf-e98bd1d38387" start_index="0" end="6036a90b-94cd-4ecf-9e10-1a315836c89b" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c9ed1bf0-7ec6-4d74-90bb-3ca745fe09a4" start_index="0" end="6036a90b-94cd-4ecf-9e10-1a315836c89b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="900e626f-8cf1-459b-9d88-1c306d537c29" start_index="0" end="c67128ce-2cab-4380-95ea-4cc62f080098" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="304faaba-b951-4699-8bc5-df2e12a8b4a1" start_index="0" end="c67128ce-2cab-4380-95ea-4cc62f080098" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c67128ce-2cab-4380-95ea-4cc62f080098" start_index="0" end="354c26c6-0d60-4c53-ac65-50b8c6c7cb36" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ecb6a565-4d9d-4e61-91d0-c9181cb2bd71" start_index="0" end="c67128ce-2cab-4380-95ea-4cc62f080098" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="354c26c6-0d60-4c53-ac65-50b8c6c7cb36" start_index="0" end="6036a90b-94cd-4ecf-9e10-1a315836c89b" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="062a0230-930b-44c6-9e97-c239e206a876" start_index="0" end="2e98139e-7e31-4eca-85c7-249b61f910ea" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="31006ef1-6268-4c85-9a38-d840c7f521dd" start_index="0" end="2e98139e-7e31-4eca-85c7-249b61f910ea" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2e98139e-7e31-4eca-85c7-249b61f910ea" start_index="0" end="354c26c6-0d60-4c53-ac65-50b8c6c7cb36" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="33e21bbc-2bac-4a86-9b96-883e1a9ed057" start_index="0" end="2e98139e-7e31-4eca-85c7-249b61f910ea" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6036a90b-94cd-4ecf-9e10-1a315836c89b" start_index="0" end="1dfff7f2-8a3b-4b1f-abcc-91185822ecad" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>
