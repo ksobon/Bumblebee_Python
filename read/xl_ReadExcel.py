@@ -91,40 +91,67 @@ def ExitExcel(xlApp, wb, ws):
 	CleanUp([ws,wb,xlApp])
 	return None
 
+def LiveStream():
+	try:
+		xlApp = Marshal.GetActiveObject("Excel.Application")
+		xlApp.Visible = True
+		xlApp.DisplayAlerts = False
+		return xlApp
+	except:
+		return None
+
+live = False
+
 if runMe:
 	try:
 		errorReport = None
 		message = None
-		xlApp = SetUp(Excel.ApplicationClass())
-		if os.path.isfile(str(filePath)):
-			xlApp.Workbooks.open(str(filePath))
-			if not isinstance(sheetName, list):
-				wb = xlApp.ActiveWorkbook
-				ws = xlApp.Sheets(sheetName)
-				dataOut = ReadData(ws, GetOrigin(ws, origin), GetExtent(ws, extent), byColumn)
+		if filePath == None:
+			# run excel in live mode
+			xlApp = LiveStream()
+			live = True
+		else:
+			# run excel from file on disk
+			xlApp = SetUp(Excel.ApplicationClass())
+			if os.path.isfile(str(filePath)):
+				xlApp.Workbooks.open(str(filePath))
+			live = False				
+		# get workbook
+		wb = xlApp.ActiveWorkbook
+		# get worksheet
+		if sheetName == None:
+			ws = xlApp.ActiveSheet
+			dataOut = ReadData(ws, GetOrigin(ws, origin), GetExtent(ws, extent), byColumn)
+			if not live:
 				ExitExcel(xlApp, wb, ws)
-			else:
-				dataOut = []
-				wb = xlApp.ActiveWorkbook
-				if isinstance(origin, list):
-					if isinstance(extent, list):
-						for index, (name, oValue, eValue) in enumerate(zip(sheetName, origin, extent)):
-							ws = xlApp.Sheets(str(name))
-							dataOut.append(ReadData(ws, GetOrigin(ws, oValue), GetExtent(ws, eValue), byColumn))
-					else:
-						for index, (name, oValue) in enumerate(zip(sheetName, origin)):
-							ws = xlApp.Sheets(str(name))
-							dataOut.append(ReadData(ws, GetOrigin(ws, oValue), GetExtent(ws, extent), byColumn))
+		elif not isinstance(sheetName, list):
+			ws = xlApp.Sheets(sheetName)
+			dataOut = ReadData(ws, GetOrigin(ws, origin), GetExtent(ws, extent), byColumn)
+			if not live:
+				ExitExcel(xlApp, wb, ws)
+		else:
+			# process multiple sheets
+			dataOut = []
+			if isinstance(origin, list):
+				if isinstance(extent, list):
+					for index, (name, oValue, eValue) in enumerate(zip(sheetName, origin, extent)):
+						ws = xlApp.Sheets(str(name))
+						dataOut.append(ReadData(ws, GetOrigin(ws, oValue), GetExtent(ws, eValue), byColumn))
 				else:
-					if isinstance(extent, list):
-						for index, (name, eValue) in enumerate(zip(sheetName, extent)):
-							ws = xlApp.Sheets(str(name))
-							dataOut.append(ReadData(ws, GetOrigin(ws, origin), GetExtent(ws, eValue), byColumn))
-					else:
-						for index, name in enumerate(sheetName):
-							ws = xlApp.Sheets(str(name))
-							dataOut.append(ReadData(ws, GetOrigin(ws, origin), GetExtent(ws, extent), byColumn))
-				ExitExcel(xlApp, wb, ws)
+					for index, (name, oValue) in enumerate(zip(sheetName, origin)):
+						ws = xlApp.Sheets(str(name))
+						dataOut.append(ReadData(ws, GetOrigin(ws, oValue), GetExtent(ws, extent), byColumn))
+			else:
+				if isinstance(extent, list):
+					for index, (name, eValue) in enumerate(zip(sheetName, extent)):
+						ws = xlApp.Sheets(str(name))
+						dataOut.append(ReadData(ws, GetOrigin(ws, origin), GetExtent(ws, eValue), byColumn))
+				else:
+					for index, name in enumerate(sheetName):
+						ws = xlApp.Sheets(str(name))
+						dataOut.append(ReadData(ws, GetOrigin(ws, origin), GetExtent(ws, extent), byColumn))
+			if not live:
+				ExitExcel(xlApp, wb, ws)	
 	except:
 		xlApp.Quit()
 		Marshal.ReleaseComObject(xlApp)
