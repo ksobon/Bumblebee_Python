@@ -1,4 +1,4 @@
-#Copyright(c) 2015, David Mans, Konrad Sobon
+# Copyright(c) 2016, David Mans, Konrad Sobon
 # @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
 
 import clr
@@ -10,7 +10,7 @@ sys.path.append(pyt_path)
 import os
 import os.path
 appDataPath = os.getenv('APPDATA')
-bbPath = appDataPath + r"\Dynamo\0.8\packages\Bumblebee\extra"
+bbPath = appDataPath + r"\Dynamo\0.9\packages\Bumblebee\extra"
 if bbPath not in sys.path:
 	sys.path.Add(bbPath)
 
@@ -34,48 +34,53 @@ runMe = IN[1]
 styles = IN[2]
 
 def StyleData(ws, gs, cellRange):
-	# get range origin and extent
-	origin = ws.Cells(bb.xlRange(cellRange)[1], bb.xlRange(cellRange)[0])
-	extent = ws.Cells(bb.xlRange(cellRange)[3], bb.xlRange(cellRange)[2])
+	# get range
+	if ":" in cellRange:
+		origin = ws.Cells(bb.xlRange(cellRange)[1], bb.xlRange(cellRange)[0])
+		extent = ws.Cells(bb.xlRange(cellRange)[3], bb.xlRange(cellRange)[2])
+		rng = ws.Range[origin, extent]
+	else:
+		# this is a named cell range
+		rng = ws.Range(cellRange)
 	# format cell fill style
 	if gs.fillStyle != None:
 		fs = gs.fillStyle
 		if fs.patternType != None:
-			ws.Range[origin, extent].Interior.Pattern = fs.PatternType()
+			rng.Interior.Pattern = fs.PatternType()
 		if fs.backgroundColor != None:
-			ws.Range[origin, extent].Interior.Color = fs.BackgroundColor()
+			rng.Interior.Color = fs.BackgroundColor()
 		if fs.patternColor != None:
-			ws.Range[origin, extent].Interior.PatternColor = fs.PatternColor()
+			rng.Interior.PatternColor = fs.PatternColor()
 	# format cell text style
 	if gs.textStyle != None:
 		ts = gs.textStyle
 		if ts.name != None:
-			ws.Range[origin, extent].Font.Name = ts.Name()
+			rng.Font.Name = ts.Name()
 		if ts.size != None:
-			ws.Range[origin, extent].Font.Size = ts.Size()
+			rng.Font.Size = ts.Size()
 		if ts.color != None:
-			ws.Range[origin, extent].Font.Color = ts.Color()
+			rng.Font.Color = ts.Color()
 		if ts.horizontalAlign != None:
-			ws.Range[origin, extent].HorizontalAlignment = ts.HorizontalAlign()
+			rng.HorizontalAlignment = ts.HorizontalAlign()
 		if ts.verticalAlign != None:
-			ws.Range[origin, extent].VerticalAlignment = ts.VerticalAlign()
+			rng.VerticalAlignment = ts.VerticalAlign()
 		if ts.bold != None:
-			ws.Range[origin, extent].Font.Bold = ts.Bold()
+			rng.Font.Bold = ts.Bold()
 		if ts.italic != None:
-			ws.Range[origin, extent].Font.Italic = ts.Italic()
+			rng.Font.Italic = ts.Italic()
 		if ts.underline != None:
-			ws.Range[origin, extent].Font.Underline = ts.Underline()
+			rng.Font.Underline = ts.Underline()
 		if ts.strikethrough != None:
-			ws.Range[origin, extent].Font.Strikethrough = ts.Strikethrough()
+			rng.Font.Strikethrough = ts.Strikethrough()
 	# format cell border style
 	if gs.borderStyle != None:
 		bs = gs.borderStyle
 		if bs.lineType != None:
-			ws.Range[origin, extent].Borders.LineStyle = bs.LineType()
+			rng.Borders.LineStyle = bs.LineType()
 		if bs.weight != None:
-			ws.Range[origin, extent].Borders.Weight = bs.Weight()
+			rng.Borders.Weight = bs.Weight()
 		if bs.color != None:
-			ws.Range[origin, extent].Borders.Color = bs.Color()
+			rng.Borders.Color = bs.Color()
 
 	return ws
 
@@ -87,8 +92,6 @@ def SetUp(xlApp):
 	return xlApp
 
 def ExitExcel(filePath, xlApp, wb, ws):
-	# clean up before exiting excel, if any COM object remains
-	# unreleased then excel crashes on open following time
 	def CleanUp(_list):
 		if isinstance(_list, list):
 			for i in _list:
@@ -126,10 +129,8 @@ if isinstance(styles, list):
 		styles = list(Flatten(styles))
 
 if runMe:
-	message = None
 	try:
 		errorReport = None
-		message = "Success!"
 		if filePath == None:
 			# run excel in a live mode
 			xlApp = LiveStream()
@@ -176,10 +177,9 @@ if runMe:
 			import traceback
 			errorReport = traceback.format_exc()
 else:
-	errorReport = None
-	message = "Run Me is set to False. Please set \nto True if you wish to write data \nto Excel."
+	errorReport = "Run Me is set to False. Please set \nto True if you wish to write data \nto Excel."
 
 if errorReport == None:
-	OUT = OUT = '\n'.join('{:^35}'.format(s) for s in message.split('\n'))
+	OUT = "Success!"
 else:
 	OUT = errorReport
