@@ -1,33 +1,40 @@
-#Copyright(c) 2015, David Mans, Konrad Sobon
+# Copyright(c) 2016, David Mans, Konrad Sobon
 # @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
 
 import clr
 import sys
-clr.AddReference('ProtoGeometry')
-from Autodesk.DesignScript.Geometry import *
-
 import System
 from System import Array
 from System.Collections.Generic import *
 
+clr.AddReferenceByName('Microsoft.Office.Interop.Excel, Version=11.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c')
+from Microsoft.Office.Interop import Excel
+System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo("en-US")
+from System.Runtime.InteropServices import Marshal
+
 pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
 sys.path.append(pyt_path)
 
-import os.path
 import os
-
 appDataPath = os.getenv('APPDATA')
-bbPath = appDataPath + r"\Dynamo\0.8\packages\Bumblebee\extra"
+dynPath = appDataPath + r"\Dynamo\0.9"
+if dynPath not in sys.path:
+	sys.path.Add(dynPath)
+	
+bbPath = appDataPath + r"\Dynamo\0.9\packages\Bumblebee\extra"
 if bbPath not in sys.path:
-	sys.path.Add(bbPath)
-
-import bumblebee as bb
-
-clr.AddReferenceByName('Microsoft.Office.Interop.Excel, Version=11.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c')
-from Microsoft.Office.Interop import Excel
-
-System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo("en-US")
-from System.Runtime.InteropServices import Marshal
+	try:
+		sys.path.Add(bbPath)
+		import bumblebee as bb
+	except:
+		import xml.etree.ElementTree as et
+		root = et.parse(dynPath + "\DynamoSettings.xml").getroot()
+		for child in root:
+			if child.tag == "CustomPackageFolders":
+				for path in child:
+					if path not in sys.path:
+						sys.path.Add(path)
+		import bumblebee as bb
 
 #The inputs to this node will be stored as a list in the IN variable.
 dataEnteringNode = IN
@@ -86,7 +93,7 @@ def ExitExcel(filePath, xlApp, wb, ws):
 			Marshal.ReleaseComObject(_list)
 		return None
 	
-	wb.SaveAs(str(filePath))
+	wb.SaveAs(unicode(filePath))
 	xlApp.ActiveWorkbook.Close(False)
 	xlApp.ScreenUpdating = True
 	CleanUp([ws,wb,xlApp])
@@ -108,11 +115,11 @@ if runMe:
 	message = None
 	xlApp = SetUp(Excel.ApplicationClass())
 	try:
-		if os.path.isfile(str(filePath)):
+		if os.path.isfile(unicode(filePath)):
 			# if excel file already exists and data is being written
 			# to single sheet
 			if not isinstance(data, list):
-				xlApp.Workbooks.open(str(filePath))
+				xlApp.Workbooks.open(unicode(filePath))
 				wb = xlApp.ActiveWorkbook
 				ws = xlApp.Sheets(data.SheetName())
 				WriteData(ws, data.Data(), byColumn, data.Origin())
@@ -120,7 +127,7 @@ if runMe:
 			# if excel file already exists but data is being written
 			# to multiple sheets
 			else:
-				xlApp.Workbooks.open(str(filePath))
+				xlApp.Workbooks.open(unicode(filePath))
 				wb = xlApp.ActiveWorkbook
 				sheetNameSet = set([x.SheetName() for x in data])
 				for i in data:
@@ -139,7 +146,7 @@ if runMe:
 			# if excel file doesn't exist and data is being written
 			# to multiple sheets
 			else:
-				sheetNameSet = set([x.SheetName() for x in data])
+				sheetNameSet = set([x.SheetName() for x in data])a
 				sheetNameList = list(sheetNameSet)
 				wb = xlApp.Workbooks.Add()
 				wb.Sheets.Add(After = wb.Sheets(wb.Sheets.Count), Count = len(sheetNameSet)-1)
