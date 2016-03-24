@@ -76,7 +76,7 @@ def ExitExcel(filePath, xlApp, wb, ws):
 			Marshal.ReleaseComObject(_list)
 		return None
 	
-	wb.SaveAs(str(filePath))
+	wb.SaveAs(unicode(filePath))
 	xlApp.ActiveWorkbook.Close(False)
 	xlApp.ScreenUpdating = True
 	CleanUp([ws,wb,xlApp])
