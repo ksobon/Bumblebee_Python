@@ -1,33 +1,40 @@
-#Copyright(c) 2015, David Mans, Konrad Sobon
+# Copyright(c) 2016, David Mans, Konrad Sobon
 # @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
 
 import clr
 import sys
-clr.AddReference('ProtoGeometry')
-from Autodesk.DesignScript.Geometry import *
-
 import System
 from System import Array
 from System.Collections.Generic import *
 
+clr.AddReferenceByName('Microsoft.Office.Interop.Excel, Version=11.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c')
+from Microsoft.Office.Interop import Excel
+System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo("en-US")
+from System.Runtime.InteropServices import Marshal
+
 pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
 sys.path.append(pyt_path)
 
-import os.path
 import os
-
 appDataPath = os.getenv('APPDATA')
-bbPath = appDataPath + r"\Dynamo\0.8\packages\Bumblebee\extra"
+dynPath = appDataPath + r"\Dynamo\0.9"
+if dynPath not in sys.path:
+	sys.path.Add(dynPath)
+	
+bbPath = appDataPath + r"\Dynamo\0.9\packages\Bumblebee\extra"
 if bbPath not in sys.path:
-	sys.path.Add(bbPath)
-
-import bumblebee as bb
-
-clr.AddReferenceByName('Microsoft.Office.Interop.Excel, Version=11.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c')
-from Microsoft.Office.Interop import Excel
-
-System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo("en-US")
-from System.Runtime.InteropServices import Marshal
+	try:
+		sys.path.Add(bbPath)
+		import bumblebee as bb
+	except:
+		import xml.etree.ElementTree as et
+		root = et.parse(dynPath + "\DynamoSettings.xml").getroot()
+		for child in root:
+			if child.tag == "CustomPackageFolders":
+				for path in child:
+					if path not in sys.path:
+						sys.path.Add(path)
+		import bumblebee as bb
 
 #The inputs to this node will be stored as a list in the IN variable.
 dataEnteringNode = IN
