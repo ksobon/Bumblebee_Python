@@ -72,8 +72,8 @@ try:
 		try:
 			dataOut = []
 			xlApp = SetUp(Excel.ApplicationClass())
-			if os.path.isfile(str(filePath)):
-				xlApp.Workbooks.open(str(filePath))
+			if os.path.isfile(unicode(filePath)):
+				xlApp.Workbooks.open(unicode(filePath))
 				wb = xlApp.ActiveWorkbook
 				for i in range(0, xlApp.Sheets.Count, 1):
 					dataOut.append(xlApp.Sheets(i+1).Name)
