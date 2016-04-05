@@ -22,6 +22,8 @@ Features so far:
 6. Line and Pie Charts.
 
 Licence
+============
+
 Bumblebee: A Plugin for Excel and Dynamo Interoperability (GPL) started by Konrad K Sobon
 
 Copyright (c) 2014-2015, Konrad K Sobon
