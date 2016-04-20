@@ -32,8 +32,9 @@ if bbPath not in sys.path:
 		for child in root:
 			if child.tag == "CustomPackageFolders":
 				for path in child:
+					path_bb = path.text + "\Bumblebee\extra"
 					if path not in sys.path:
-						sys.path.Add(path)
+						sys.path.Add(path_bb)
 		import bumblebee as bb
 
 #The inputs to this node will be stored as a list in the IN variable.
@@ -43,6 +44,15 @@ filePath = IN[0]
 runMe = IN[1]
 byColumn = IN[2]
 data = IN[3]
+
+def LiveStream():
+	try:
+		xlApp = Marshal.GetActiveObject("Excel.Application")
+		xlApp.Visible = True
+		xlApp.DisplayAlerts = False
+		return xlApp
+	except:
+		return None
 
 def SetUp(xlApp):
 	# supress updates and warning pop ups
@@ -107,65 +117,88 @@ def Flatten(*args):
         else:
             yield x
 
+def WorksheetExists(wb, name):
+	for i in wb.Sheets:
+		if i.Name == name:
+			return True
+			break
+		else:
+			continue
+	return False
+
 if isinstance(data, list):
 	if any(isinstance(x, list) for x in data):
 		data = list(Flatten(data))
 
+live = False
+
 if runMe:
-	message = None
-	xlApp = SetUp(Excel.ApplicationClass())
 	try:
-		if os.path.isfile(unicode(filePath)):
-			# if excel file already exists and data is being written
-			# to single sheet
-			if not isinstance(data, list):
-				xlApp.Workbooks.open(unicode(filePath))
-				wb = xlApp.ActiveWorkbook
-				ws = xlApp.Sheets(data.SheetName())
-				WriteData(ws, data.Data(), byColumn, data.Origin())
-				ExitExcel(filePath, xlApp, wb, ws)
-			# if excel file already exists but data is being written
-			# to multiple sheets
-			else:
-				xlApp.Workbooks.open(unicode(filePath))
-				wb = xlApp.ActiveWorkbook
-				sheetNameSet = set([x.SheetName() for x in data])
-				for i in data:
-					ws = xlApp.Sheets(i.SheetName())
-					WriteData(ws, i.Data(), byColumn, i.Origin())
-				ExitExcel(filePath, xlApp, wb, ws)
+		errorReport = None
+		if filePath == None:
+			# run excel in live mode
+			xlApp = LiveStream()
+			live = True
+			wb = xlApp.ActiveWorkbook
 		else:
-			# if excel file doesn't exist and data is being written
-			# to a single sheet
-			if not isinstance(data, list):
-				wb = xlApp.Workbooks.Add()
-				ws = wb.Worksheets[1]
-				ws.Name = data.SheetName()
-				WriteData(ws, data.Data(), byColumn, data.Origin())
-				ExitExcel(filePath, xlApp, wb, ws)
-			# if excel file doesn't exist and data is being written
-			# to multiple sheets
+			# run excel from a file on disk
+			xlApp = SetUp(Excel.ApplicationClass())
+			live = False
+			# if file exists open it
+			if os.path.isfile(unicode(filePath)):
+				xlApp.Workbooks.open(unicode(filePath))
+				wb = xlApp.ActiveWorkbook
+			# if file doesn't exist just make a new one
 			else:
-				sheetNameSet = set([x.SheetName() for x in data])a
-				sheetNameList = list(sheetNameSet)
 				wb = xlApp.Workbooks.Add()
-				wb.Sheets.Add(After = wb.Sheets(wb.Sheets.Count), Count = len(sheetNameSet)-1)
-				for i in range(0,len(sheetNameSet),1):
-					wb.Worksheets[i+1].Name = sheetNameList[i]
-				for i in data:
+				if not isinstance(data, list):
+					# add and rename worksheet
+					ws = wb.Worksheets[1]
+					ws.Name = data.SheetName()
+				else:
+					for i in data:
+						# if worksheet doesn't exist add it and name it
+						if not WorksheetExists(wb, i.SheetName()):
+							wb.Sheets.Add(After = wb.Sheets(wb.Sheets.Count), Count = 1)
+							ws = wb.Worksheets[wb.Sheets.Count]
+							ws.Name = i.SheetName()
+		# data is a flat list - single sheet gets written
+		if not isinstance(data, list):
+			if WorksheetExists(wb, data.SheetName()):
+				ws = xlApp.Sheets(data.SheetName())
+			else:
+				wb.Sheets.Add(After = wb.Sheets(wb.Sheets.Count), Count = 1)
+				ws = wb.Worksheets[wb.Sheets.Count]
+				ws.Name = data.SheetName()
+			WriteData(ws, data.Data(), byColumn, data.Origin())
+			if not live:
+				ExitExcel(filePath, xlApp, wb, ws)
+		# data is a nested list - multiple sheets are written
+		else:
+			sheetNameSet = set([x.SheetName() for x in data])
+			for i in data:
+				if WorksheetExists(wb, i.SheetName()):
 					ws = xlApp.Sheets(i.SheetName())
-					WriteData(ws , i.Data(), byColumn, i.Origin())
-				ExitExcel(filePath, xlApp, wb, ws)					
+				else:
+					wb.Sheets.Add(After = wb.Sheets(wb.Sheets.Count), Count = 1)
+					ws = wb.Worksheets[wb.Sheets.Count]
+					ws.Name = i.SheetName()
+				WriteData(ws, i.Data(), byColumn, i.Origin())
+			if not live:
+				ExitExcel(filePath, xlApp, wb, ws)
+				
 	except:
 		xlApp.Quit()
 		Marshal.ReleaseComObject(xlApp)
-		message = "Something went wrong. Please check \n your inputs and try again. Make sure that Excel is closed when attempting to override the file."
+		# if error accurs anywhere in the process catch it
+		import traceback
+		errorReport = traceback.format_exc()
 		pass
 else:
-	message = "Run Me is set to False. Please set \nto True if you wish to write data \nto Excel."
+	errorReport = "Set RunMe to True."
 
 #Assign your output to the OUT variable
-if message == None:
+if errorReport == None:
 	OUT = "Success!"
 else:
-	OUT = '\n'.join('{:^35}'.format(s) for s in message.split('\n'))
+	OUT = errorReport
