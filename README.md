@@ -21,7 +21,7 @@ Features so far:
 5. Conditional Formatting (Cell Value, Expression, 2/3 Color Scale as well as TopBottom Percentile are working)
 6. Line and Pie Charts.
 
-Licence
+License
 ============
 
 Bumblebee: A Plugin for Excel and Dynamo Interoperability (GPL) started by Konrad K Sobon
