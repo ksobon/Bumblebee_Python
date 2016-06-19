@@ -1,8 +1,8 @@
 """
-Copyright(c) 2015, Konrad Sobon
+Copyright(c) 2016, Konrad Sobon
 @arch_laboratory, http://archi-lab.net
 
-Copyright (c) 2015, David Mans
+Copyright (c) 2016, David Mans
 http://neoarchaic.net
 
 Excel and Dynamo interop library
@@ -10,7 +10,7 @@ Excel and Dynamo interop library
 """
 import clr
 import sys
-sys.path.append(r"C:\Program Files\Dynamo 0.8")
+sys.path.append(r"C:\Program Files\Dynamo\Dynamo Core\1.0")
 clr.AddReference('ProtoGeometry')
 
 pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
@@ -49,12 +49,11 @@ def ConvertNumber(num):
     return ''.join(reversed(letters))
 
 def ConvertChar(char):
-    number =- 25
-    for l in char:
-	    if not l in string.ascii_letters:
-		    return False
-	    number += ord(l.upper()) - 64 + 25
-    return int(number)
+    num = 0
+    for c in char:
+        if c in string.ascii_letters:
+            num = num * 26 + (ord(c.upper()) - ord('A')) + 1
+    return num
 
 def CellIndex(cellAddress):
     match = re.match(r"([a-z]+)([0-9]+)", cellAddress, re.I)
@@ -283,6 +282,75 @@ class BBLabelStyle(object):
             return None
         else:
             return self.labelPosition
+
+class BBLineStyle(object):
+
+    def __init__(self, color=None, weight=None, lineType=None, compoundLineType=None, smooth=None):
+        self.color = color
+        self.weight = weight
+        self.lineType = lineType
+        self.compoundLineType = compoundLineType
+        self.smooth = smooth
+    def Color(self):
+        if self.color == None:
+            return None
+        else:
+            return RGBToRGBLong((self.color.Blue, self.color.Green, self.color.Red))
+    def Weight(self):
+        if self.weight == None:
+            return None
+        else:
+            return self.weight
+    def LineType(self):
+        if self.lineType == None:
+            return None
+        else:
+            return self.lineType
+    def CompoundLineType(self):
+        if self.compoundLineType == None:
+            return None
+        else:
+            return self.compoundLineType
+    def Smooth(self):
+        if self.smooth == None:
+            return None
+        else:
+            return self.smooth
+
+class BBMarkerStyle(object):
+
+    def __init__(self, markerType=None, markerSize=None, markerColor=None, markerBorderColor=None):
+        self.markerType = markerType
+        self.markerSize = markerSize
+        self.markerColor = markerColor
+        self.markerBorderColor = markerBorderColor
+    def MarkerType(self):
+        if self.markerType == None:
+            return None
+        else:
+            return self.markerType
+    def MarkerSize(self):
+        if self.markerSize == None:
+            return None
+        else:
+            return self.markerSize
+    def MarkerColor(self):
+        if self.markerColor == None:
+            return None
+        else:
+            return RGBToRGBLong((self.markerColor.Blue, self.markerColor.Green, self.markerColor.Red))
+    def MarkerBorderColor(self):
+        if self.markerBorderColor == None:
+            return None
+        else:
+            return RGBToRGBLong((self.markerBorderColor.Blue, self.markerBorderColor.Green, self.markerBorderColor.Red))
+
+class BBLineGraphStyle(object):
+
+    def __init__(self, labelStyle=None, lineStyle=None, markerStyle=None):
+        self.labelStyle = labelStyle
+        self.lineStyle = lineStyle
+        self.markerStyle = markerStyle
 
 """ Conditional Formatting Classes """
 
