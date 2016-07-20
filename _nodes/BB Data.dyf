@@ -1,4 +1,4 @@
-<Workspace Version="1.0.0.1180" X="-136.367347747129" Y="-337.832144255008" zoom="1.703916824555" Name="BB Data" Description="This node is a building block for different modes of writing to Excel files. You can combines this node into a list to write to multiple sheets or use just one to write to a single sheet. " ID="ee2bfd6a-235b-4c14-a309-f5cb3e3e3227" Category="Archi-lab_Bumblebee.Write">
+<Workspace Version="1.1.1.1841" X="-136.367347747129" Y="-337.832144255008" zoom="1.703916824555" Name="BB Data" Description="This node is a building block for different modes of writing to Excel files. You can combines this node into a list to write to multiple sheets or use just one to write to a single sheet. " ID="ee2bfd6a-235b-4c14-a309-f5cb3e3e3227" Category="Archi-lab_Bumblebee.Write">
   <NamespaceResolutionMap />
   <Elements>
     <PythonNodeModels.PythonNode guid="4a925457-fdab-4b41-93f3-fab4c54c71f0" type="PythonNodeModels.PythonNode" nickname="Python Script" x="508" y="316" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="3">
@@ -7,6 +7,7 @@
 
 import clr
 import sys
+import System
 
 #import main module
 a1 = System.AppDomain.CurrentDomain.GetAssemblies()
