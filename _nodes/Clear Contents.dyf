@@ -1,0 +1,167 @@
+<Workspace Version="1.0.0.1180" X="-135.921954349858" Y="-242.993131584233" zoom="1.545620359375" Name="Clear Contents" Description="This node will clear contents or formatting from a range within Excel sheet or an entire sheet. " ID="79bbba35-a980-44c4-a12e-8f8d1310aca4" Category="Archi-lab_Bumblebee.App">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="24ff859b-e82c-4a39-b413-d9b68adc98f5" type="PythonNodeModels.PythonNode" nickname="Python Script" x="556" y="278" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="6">
+      <Script># Copyright(c) 2016, David Mans, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
+
+import clr
+import sys
+import System
+from System import Array
+from System.Collections.Generic import *
+
+clr.AddReferenceByName('Microsoft.Office.Interop.Excel, Version=11.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c')
+from Microsoft.Office.Interop import Excel
+System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo("en-US")
+from System.Runtime.InteropServices import Marshal
+
+#import main module
+a1 = System.AppDomain.CurrentDomain.GetAssemblies()
+p1 = [a.Location for a in a1 if 'bbIcons,' in a.FullName][0]
+p2 = System.IO.Path.GetDirectoryName(p1).rsplit('\\',1)[0]
+bb_path = '%s\\extra\\' %p2
+sys.path.append(bb_path)
+import bumblebee as bb
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+filePath = IN[0]
+runMe = IN[1]
+sheetName = IN[2]
+clearContent = IN[3]
+clearFormat = IN[4]
+cellRange = IN[5]
+
+def SetUp(xlApp):
+	# supress updates and warning pop ups
+	xlApp.Visible = False
+	xlApp.DisplayAlerts = False
+	xlApp.ScreenUpdating = False
+	return xlApp
+
+def LiveStream():
+	try:
+		xlApp = Marshal.GetActiveObject("Excel.Application")
+		xlApp.Visible = True
+		xlApp.DisplayAlerts = False
+		return xlApp
+	except:
+		return None
+
+def ExitExcel(filePath, xlApp, wb, ws):
+	# clean up before exiting excel, if any COM object remains
+	# unreleased then excel crashes on open following time
+	def CleanUp(_list):
+		if isinstance(_list, list):
+			for i in _list:
+				Marshal.ReleaseComObject(i)
+		else:
+			Marshal.ReleaseComObject(_list)
+		return None
+	
+	wb.SaveAs(unicode(filePath))
+	xlApp.ActiveWorkbook.Close(False)
+	xlApp.ScreenUpdating = True
+	CleanUp([ws,wb,xlApp])
+	return None
+
+def ClearExcel(ws, cellRange, clearContents, clearFormats):
+	# get origin and extent from range string
+	# if no range supplied apply formatting to entire sheet
+	if cellRange != None:
+		origin = ws.Cells(bb.xlRange(cellRange)[1], bb.xlRange(cellRange)[0])
+		extent = ws.Cells(bb.xlRange(cellRange)[3], bb.xlRange(cellRange)[2])
+	else:
+		origin = ws.Cells(ws.UsedRange.Row, ws.UsedRange.Column)
+		extent = ws.Cells(ws.UsedRange.Rows(ws.UsedRange.Rows.Count).Row, ws.UsedRange.Columns(ws.UsedRange.Columns.Count).Column)
+	if clearContents:
+		ws.Range[origin, extent].ClearContents()
+	if clearFormats:
+		ws.Range[origin, extent].ClearFormats()
+	return ws
+
+if runMe:
+	message = None
+	try:
+		errorReport = None
+		message = "Success!"
+		if filePath == None:
+			# run excel in a live mode
+			xlApp = LiveStream()
+			wb = xlApp.ActiveWorkbook
+			if sheetName == None:
+				ws = xlApp.ActiveSheet
+			else:
+				ws = xlApp.Sheets(sheetName)
+			ClearExcel(ws, cellRange, clearContent, clearFormat)
+		else:
+			try:
+				xlApp = SetUp(Excel.ApplicationClass())
+				if System.IO.File.Exists(str(filePath)):
+					xlApp.Workbooks.open(str(filePath))
+					wb = xlApp.ActiveWorkbook
+					ws = xlApp.Sheets(sheetName)
+					ClearExcel(ws, cellRange, clearContent, clearFormat)
+					#Marshal.ReleaseComObject(extent)
+					#Marshal.ReleaseComObject(origin)
+					ExitExcel(filePath, xlApp, wb, ws)
+				else:
+					message = "Specified file doesn't exists."
+			except:
+				xlApp.Quit()
+				Marshal.ReleaseComObject(xlApp)
+	except:
+		# if error accurs anywhere in the process catch it
+		import traceback
+		errorReport = traceback.format_exc()
+		pass
+else:
+	errorReport = None
+	message = "Run Me is set to False. Please set \nto True if you wish to write data \nto Excel."
+
+if errorReport == None:
+	OUT = OUT = '\n'.join('{:^35}'.format(s) for s in message.split('\n'))
+else:
+	OUT = errorReport
+</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="f7912e1e-a0da-4ade-8485-7783e29418cc" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="234.159670681491" y="221.912922862202" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="filePath: var = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="63c92c92-ef2b-48ca-961e-38326bb3950e" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="234.749988466817" y="281.379276698707" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="RunIt: bool = false" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="0ae70ca2-8905-4630-9ae8-7ba85b2a82e9" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="247.984935502596" y="337.315524606771" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="SheetName:var=null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="da477e0d-0676-422b-a64f-73806ca90418" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="209.460729965909" y="395.839730143458" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="ClearContent: bool=false" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="3e236394-2203-4748-a768-6afdd7fb2372" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="222.695677001689" y="451.128988644365" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="CearFormat: bool=false" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="dee5a74f-480d-4372-9d94-9dc12504a6be" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="249.040427046075" y="505.941272603607" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="CellRange:var=null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="872053fb-d9c4-48b1-adab-33bff28b74f3" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="767.278942177889" y="340.311984371717" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="OUT" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="24ff859b-e82c-4a39-b413-d9b68adc98f5" start_index="0" end="872053fb-d9c4-48b1-adab-33bff28b74f3" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f7912e1e-a0da-4ade-8485-7783e29418cc" start_index="0" end="24ff859b-e82c-4a39-b413-d9b68adc98f5" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="63c92c92-ef2b-48ca-961e-38326bb3950e" start_index="0" end="24ff859b-e82c-4a39-b413-d9b68adc98f5" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0ae70ca2-8905-4630-9ae8-7ba85b2a82e9" start_index="0" end="24ff859b-e82c-4a39-b413-d9b68adc98f5" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="da477e0d-0676-422b-a64f-73806ca90418" start_index="0" end="24ff859b-e82c-4a39-b413-d9b68adc98f5" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3e236394-2203-4748-a768-6afdd7fb2372" start_index="0" end="24ff859b-e82c-4a39-b413-d9b68adc98f5" end_index="4" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="dee5a74f-480d-4372-9d94-9dc12504a6be" start_index="0" end="24ff859b-e82c-4a39-b413-d9b68adc98f5" end_index="5" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

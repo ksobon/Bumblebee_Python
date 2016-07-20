@@ -1,32 +1,51 @@
-<Workspace Version="0.8.0.950" X="58.2060299967113" Y="-125.044476048686" zoom="1.7138791189045" Name="Read Excel" ID="6cf7f3b9-69ab-40da-b41c-62068370e1b8" Description="This node will read an excel file. You can read an entore sheet contents, read from specific origin cell, read only specific range, or do all of the former for multiple sheets at the same time. " Category="Archi-lab_Bumblebee.Read">
+<Workspace Version="1.1.1.1841" X="-54.7617978189503" Y="-110.907495670278" zoom="1.27829901769394" Name="Read Excel" Description="This node will read an excel file. You can read an entore sheet contents, read from specific origin cell, read only specific range, or do all of the former for multiple sheets at the same time. " ID="6cf7f3b9-69ab-40da-b41c-62068370e1b8" Category="Archi-lab_Bumblebee.Read">
   <NamespaceResolutionMap />
   <Elements>
-    <DSIronPythonNode.PythonNode guid="ffb03e55-11e9-440e-952f-d09a6ca6b8d2" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="469" y="210" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="6">
-      <Script>#Copyright(c) 2015, David Mans, Konrad Sobon
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="87c78a97-8c52-429e-92e8-4ba93c2d4968" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="165.055909984151" y="125.619413691131" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="filePath : string = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="e82415e0-3e20-4bb1-b22c-cc5af642d020" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="202.714935070524" y="188.777948597021" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="RunIt:bool=false" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="b3ef95fb-98a2-4f05-ac7b-f0e55366c698" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="176.268461696426" y="249.509576296637" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="SheetName:string = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="64b34667-737e-434f-8b18-dcb83523c699" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="189.882307491147" y="311.434399465302" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="ByColumn:bool=false" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="60dad487-3d1b-45cb-b278-8e90f275ada5" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="142.406565651308" y="367.452611350471" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="Origin : string = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="439ab395-1287-4c32-a4b8-82b9bc8139ea" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="142.687792942034" y="430.174080997827" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="Extent : string = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="568cb3f9-9710-48e4-86d5-c3323f789392" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="698.650844713132" y="208.370660058665" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="OUT" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="5ce1e550-190e-4115-9351-89e36d6a4bbd" type="PythonNodeModels.PythonNode" nickname="Python Script" x="495.002960231055" y="215.057268968423" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="6">
+      <Script># Copyright(c) 2016, David Mans, Konrad Sobon
 # @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
 
 import clr
 import sys
-clr.AddReference('ProtoGeometry')
-from Autodesk.DesignScript.Geometry import *
-
 import System
 from System import Array
 from System.Collections.Generic import *
 
 clr.AddReferenceByName('Microsoft.Office.Interop.Excel, Version=11.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c')
 from Microsoft.Office.Interop import Excel
-
 System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo("en-US")
 from System.Runtime.InteropServices import Marshal
 
 pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
 sys.path.append(pyt_path)
 
-import os.path
-
-#The inputs to this node will be stored as a list in the IN variable.
-dataEnteringNode = IN
+a1 = System.AppDomain.CurrentDomain.GetAssemblies()
+p1 = [a.Location for a in a1 if 'bbIcons,' in a.FullName][0]
+p2 = System.IO.Path.GetDirectoryName(p1).rsplit('\\',1)[0]
+bb_path = '%s\\extra\\' %p2
+sys.path.append(bb_path)
+import bumblebee as bb
 
 filePath = IN[0]
 runMe = IN[1]
@@ -51,16 +70,16 @@ def ReadData(ws, origin, extent, byColumn):
 				dataOut[i].append(rng[j,i])
 		return dataOut
 
-def GetOrigin(ws, origin):
+def GetOrigin(ws, origin, bb = bb):
 	if origin != None:
-		origin = ws.Cells(origin[1], origin[0])
+		origin = ws.Cells(bb.CellIndex(origin)[1], bb.CellIndex(origin)[0])
 	else:
 		origin = ws.Cells(ws.UsedRange.Row, ws.UsedRange.Column)
 	return origin
 
 def GetExtent(ws, extent):
 	if extent != None:
-		extent = ws.Cells(extent[1], extent[0])
+		extent = ws.Cells(bb.CellIndex(extent)[1], bb.CellIndex(extent)[0])
 	else:
 		extent = ws.Cells(ws.UsedRange.Rows(ws.UsedRange.Rows.Count).Row, ws.UsedRange.Columns(ws.UsedRange.Columns.Count).Column)
 	return extent
@@ -88,22 +107,47 @@ def ExitExcel(xlApp, wb, ws):
 	CleanUp([ws,wb,xlApp])
 	return None
 
+def LiveStream():
+	try:
+		xlApp = Marshal.GetActiveObject("Excel.Application")
+		xlApp.Visible = True
+		xlApp.DisplayAlerts = False
+		return xlApp
+	except:
+		return None
+
+live = False
+
 if runMe:
-	message = None
-	xlApp = SetUp(Excel.ApplicationClass())
-	if os.path.isfile(str(filePath)):
-		try:
-			xlApp.Workbooks.open(str(filePath))
-		except:
-			message = "Excel might be open. Please close it!"
-		if not isinstance(sheetName, list):
-			wb = xlApp.ActiveWorkbook
+	try:
+		errorReport = None
+		message = None
+		if filePath == None:
+			# run excel in live mode
+			xlApp = LiveStream()
+			live = True
+		else:
+			# run excel from file on disk
+			xlApp = SetUp(Excel.ApplicationClass())
+			if System.IO.File.Exists(unicode(filePath)):
+				xlApp.Workbooks.open(unicode(filePath))
+			live = False				
+		# get workbook
+		wb = xlApp.ActiveWorkbook
+		# get worksheet
+		if sheetName == None:
+			ws = xlApp.ActiveSheet
+			dataOut = ReadData(ws, GetOrigin(ws, origin), GetExtent(ws, extent), byColumn)
+			if not live:
+				ExitExcel(xlApp, wb, ws)
+		elif not isinstance(sheetName, list):
 			ws = xlApp.Sheets(sheetName)
 			dataOut = ReadData(ws, GetOrigin(ws, origin), GetExtent(ws, extent), byColumn)
-			ExitExcel(xlApp, wb, ws)
+			if not live:
+				ExitExcel(xlApp, wb, ws)
 		else:
+			# process multiple sheets
 			dataOut = []
-			wb = xlApp.ActiveWorkbook
 			if isinstance(origin, list):
 				if isinstance(extent, list):
 					for index, (name, oValue, eValue) in enumerate(zip(sheetName, origin, extent)):
@@ -122,46 +166,38 @@ if runMe:
 					for index, name in enumerate(sheetName):
 						ws = xlApp.Sheets(str(name))
 						dataOut.append(ReadData(ws, GetOrigin(ws, origin), GetExtent(ws, extent), byColumn))
-			ExitExcel(xlApp, wb, ws)
+			if not live:
+				ExitExcel(xlApp, wb, ws)	
+	except:
+		xlApp.Quit()
+		Marshal.ReleaseComObject(xlApp)
+		# if error accurs anywhere in the process catch it
+		import traceback
+		errorReport = traceback.format_exc()
+		pass
 else:
-	message = "Set RunMe to True."
+	errorReport = "Set RunMe to True."
 
 #Assign your output to the OUT variable
-if message == None:
+if errorReport == None:
 	OUT = dataOut
 else:
-	OUT = message</Script>
-    </DSIronPythonNode.PythonNode>
-    <Dynamo.Nodes.Symbol guid="87c78a97-8c52-429e-92e8-4ba93c2d4968" type="Dynamo.Nodes.Symbol" nickname="Input" x="249.977534567397" y="128.655633827881" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <Symbol value="File Path" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Symbol guid="e82415e0-3e20-4bb1-b22c-cc5af642d020" type="Dynamo.Nodes.Symbol" nickname="Input" x="202.714935070524" y="188.777948597021" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <Symbol value="RunIt:bool=false" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Symbol guid="b3ef95fb-98a2-4f05-ac7b-f0e55366c698" type="Dynamo.Nodes.Symbol" nickname="Input" x="248.889975581643" y="248.13935905352" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <Symbol value="SheetName" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Symbol guid="64b34667-737e-434f-8b18-dcb83523c699" type="Dynamo.Nodes.Symbol" nickname="Input" x="189.882307491147" y="311.434399465302" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <Symbol value="ByColumn:bool=false" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Symbol guid="60dad487-3d1b-45cb-b278-8e90f275ada5" type="Dynamo.Nodes.Symbol" nickname="Input" x="142.406565651308" y="367.452611350471" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <Symbol value="Origin : var = null" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Symbol guid="439ab395-1287-4c32-a4b8-82b9bc8139ea" type="Dynamo.Nodes.Symbol" nickname="Input" x="184.909697440049" y="429.57091093357" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <Symbol value="Extent : var = null" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Output guid="568cb3f9-9710-48e4-86d5-c3323f789392" type="Dynamo.Nodes.Output" nickname="Output" x="698.650844713132" y="208.370660058665" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <Symbol value="OUT" />
-    </Dynamo.Nodes.Output>
+	OUT = errorReport</Script>
+    </PythonNodeModels.PythonNode>
   </Elements>
   <Connectors>
-    <Dynamo.Models.ConnectorModel start="ffb03e55-11e9-440e-952f-d09a6ca6b8d2" start_index="0" end="568cb3f9-9710-48e4-86d5-c3323f789392" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="87c78a97-8c52-429e-92e8-4ba93c2d4968" start_index="0" end="ffb03e55-11e9-440e-952f-d09a6ca6b8d2" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="e82415e0-3e20-4bb1-b22c-cc5af642d020" start_index="0" end="ffb03e55-11e9-440e-952f-d09a6ca6b8d2" end_index="1" portType="0" />
-    <Dynamo.Models.ConnectorModel start="b3ef95fb-98a2-4f05-ac7b-f0e55366c698" start_index="0" end="ffb03e55-11e9-440e-952f-d09a6ca6b8d2" end_index="2" portType="0" />
-    <Dynamo.Models.ConnectorModel start="64b34667-737e-434f-8b18-dcb83523c699" start_index="0" end="ffb03e55-11e9-440e-952f-d09a6ca6b8d2" end_index="3" portType="0" />
-    <Dynamo.Models.ConnectorModel start="60dad487-3d1b-45cb-b278-8e90f275ada5" start_index="0" end="ffb03e55-11e9-440e-952f-d09a6ca6b8d2" end_index="4" portType="0" />
-    <Dynamo.Models.ConnectorModel start="439ab395-1287-4c32-a4b8-82b9bc8139ea" start_index="0" end="ffb03e55-11e9-440e-952f-d09a6ca6b8d2" end_index="5" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="87c78a97-8c52-429e-92e8-4ba93c2d4968" start_index="0" end="5ce1e550-190e-4115-9351-89e36d6a4bbd" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e82415e0-3e20-4bb1-b22c-cc5af642d020" start_index="0" end="5ce1e550-190e-4115-9351-89e36d6a4bbd" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b3ef95fb-98a2-4f05-ac7b-f0e55366c698" start_index="0" end="5ce1e550-190e-4115-9351-89e36d6a4bbd" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="64b34667-737e-434f-8b18-dcb83523c699" start_index="0" end="5ce1e550-190e-4115-9351-89e36d6a4bbd" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="60dad487-3d1b-45cb-b278-8e90f275ada5" start_index="0" end="5ce1e550-190e-4115-9351-89e36d6a4bbd" end_index="4" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="439ab395-1287-4c32-a4b8-82b9bc8139ea" start_index="0" end="5ce1e550-190e-4115-9351-89e36d6a4bbd" end_index="5" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5ce1e550-190e-4115-9351-89e36d6a4bbd" start_index="0" end="568cb3f9-9710-48e4-86d5-c3323f789392" end_index="0" portType="0" />
   </Connectors>
   <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
 </Workspace>

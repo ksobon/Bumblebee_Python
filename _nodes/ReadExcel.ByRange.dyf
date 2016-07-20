@@ -1,0 +1,193 @@
+<Workspace Version="1.1.1.1841" X="-743.172913757525" Y="-842.20554361396" zoom="1.42639164656832" Name="ReadExcel.ByRange" Description="This node allows for reading an Excel file by specifying a Range in A1 formatting style &quot;A1:X11&quot; or by using a named range. " ID="fe691478-f1c8-4cb7-af44-b872f1b431fd" Category="Archi-lab_Bumblebee.Read">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="a370785d-9c6d-489c-b9a9-e0726a219321" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1062.36539575639" y="716.970183637492" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="5">
+      <Script># Copyright(c) 2016, David Mans, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
+
+import clr
+import sys
+import System
+from System import Array
+from System.Collections.Generic import *
+
+clr.AddReferenceByName('Microsoft.Office.Interop.Excel, Version=11.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c')
+from Microsoft.Office.Interop import Excel
+System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo("en-US")
+from System.Runtime.InteropServices import Marshal
+
+#import main module
+a1 = System.AppDomain.CurrentDomain.GetAssemblies()
+p1 = [a.Location for a in a1 if 'bbIcons,' in a.FullName][0]
+p2 = System.IO.Path.GetDirectoryName(p1).rsplit('\\',1)[0]
+bb_path = '%s\\extra\\' %p2
+sys.path.append(bb_path)
+import bumblebee as bb
+
+def ReadData(ws, cellRange, byColumn):
+	# get range
+	if ":" in cellRange:
+		origin = ws.Cells(bb.xlRange(cellRange)[1], bb.xlRange(cellRange)[0])
+		extent = ws.Cells(bb.xlRange(cellRange)[3], bb.xlRange(cellRange)[2])
+		rng = ws.Range[origin, extent].Value2
+	else:
+		# this is a named cell range
+		rng = ws.Range(cellRange).Value2
+	if not byColumn:
+		dataOut = [[] for i in range(rng.GetUpperBound(0))]
+		for i in range(rng.GetLowerBound(0)-1, rng.GetUpperBound(0), 1):
+			for j in range(rng.GetLowerBound(1)-1, rng.GetUpperBound(1), 1):
+				dataOut[i].append(rng[i,j])
+		return dataOut
+	else:
+		dataOut = [[] for i in range(rng.GetUpperBound(1))]
+		for i in range(rng.GetLowerBound(1)-1, rng.GetUpperBound(1), 1):
+			for j in range(rng.GetLowerBound(0)-1, rng.GetUpperBound(0), 1):
+				dataOut[i].append(rng[j,i])
+		return dataOut
+
+def SetUp(xlApp):
+	# supress updates and warning pop ups
+	xlApp.Visible = False
+	xlApp.DisplayAlerts = False
+	xlApp.ScreenUpdating = False
+	return xlApp
+
+def ExitExcel(xlApp, wb, ws):
+	# clean up before exiting excel, if any COM object remains
+	# unreleased then excel crashes on open following time
+	def CleanUp(_list):
+		if isinstance(_list, list):
+			for i in _list:
+				Marshal.ReleaseComObject(i)
+		else:
+			Marshal.ReleaseComObject(_list)
+		return None
+		
+	xlApp.ActiveWorkbook.Close(False)
+	xlApp.ScreenUpdating = True
+	CleanUp([ws,wb,xlApp])
+	return None
+
+def LiveStream():
+	try:
+		xlApp = Marshal.GetActiveObject("Excel.Application")
+		xlApp.Visible = True
+		xlApp.DisplayAlerts = False
+		return xlApp
+	except:
+		return None
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+filePath = IN[0]
+runMe = IN[1]
+sheetName = IN[2]
+byColumn = IN[3]
+cellRange = IN[4]
+
+live = False
+
+if runMe:
+	try:
+		errorReport = None
+		if filePath == None:
+			# run excel in live mode
+			if LiveStream() != None:
+				xlApp = LiveStream()
+				wb = xlApp.ActiveWorkbook
+				live = True
+			else:
+				errorReport = "Open Excel file or specify path."
+		else:
+			# run excel from file on disk
+			xlApp = SetUp(Excel.ApplicationClass())
+			if System.IO.File.Exists(unicode(filePath)):
+				xlApp.Workbooks.open(unicode(filePath))
+				wb = xlApp.ActiveWorkbook
+			live = False				
+		# get worksheet
+		if sheetName == None:
+			ws = xlApp.ActiveSheet
+			if isinstance(cellRange, list):
+				dataOut = []
+				for rng in cellRange:
+					dataOut.append(ReadData(ws, rng, byColumn))
+			else:
+				dataOut = ReadData(ws, cellRange, byColumn)
+			if not live:
+				ExitExcel(xlApp, wb, ws)
+		elif not isinstance(sheetName, list):
+			ws = xlApp.Sheets(sheetName)
+			if isinstance(cellRange, list):
+				dataOut = []
+				for rng in cellRange:
+					dataOut.append(ReadData(ws, rng, byColumn))
+			else:
+				dataOut = ReadData(ws, cellRange, byColumn)
+			if not live:
+				ExitExcel(xlApp, wb, ws)
+		else:
+			# process multiple sheets
+			dataOut = []
+			if isinstance(cellRange, list):
+				for name, rng in zip(sheetName, cellRange):
+					ws = xlApp.Sheets(str(name))
+					dataOut.append(ReadData(ws, rng, byColumn))
+			else:
+				for name in sheetName:
+					ws = xlApp.Sheets(str(name))
+					dataOut.append(ReadData(ws, cellRange, byColumn))
+			if not live:
+				ExitExcel(xlApp, wb, ws)	
+	except:
+		xlApp.Quit()
+		Marshal.ReleaseComObject(xlApp)
+		# if error accurs anywhere in the process catch it
+		import traceback
+		errorReport = traceback.format_exc()
+		pass
+else:
+	errorReport = "Set RunMe to True."
+
+#Assign your output to the OUT variable
+if errorReport == None:
+	OUT = dataOut
+else:
+	OUT = errorReport</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="5028d1d0-f859-4883-a5b8-21cf31d373b0" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1193.93264385844" y="704.1429403643" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="OUT" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="abce5fbb-49ff-4ddd-9e8c-fa57d7235f48" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="779.731958967768" y="680.029156068679" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="filePath: string = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="f5fe5c65-55e9-4c06-ba64-855f0544d19a" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="785.539013163754" y="739.659108380419" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="RunIt:bool = false" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="9dfff6c2-d312-4536-b6cc-2437cf127188" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="763.28439274503" y="801.343603804074" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="SheetName:string = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="c4073aaa-9bff-46a9-8526-f4079cc128f7" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="770.957134073541" y="865.101923166126" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="ByColumn:bool = false" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="b72e251b-5b5e-46c3-88cb-d430f82b7744" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="781.782017026516" y="929.357007582985" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="Range:string = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="a370785d-9c6d-489c-b9a9-e0726a219321" start_index="0" end="5028d1d0-f859-4883-a5b8-21cf31d373b0" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="abce5fbb-49ff-4ddd-9e8c-fa57d7235f48" start_index="0" end="a370785d-9c6d-489c-b9a9-e0726a219321" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f5fe5c65-55e9-4c06-ba64-855f0544d19a" start_index="0" end="a370785d-9c6d-489c-b9a9-e0726a219321" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9dfff6c2-d312-4536-b6cc-2437cf127188" start_index="0" end="a370785d-9c6d-489c-b9a9-e0726a219321" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c4073aaa-9bff-46a9-8526-f4079cc128f7" start_index="0" end="a370785d-9c6d-489c-b9a9-e0726a219321" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b72e251b-5b5e-46c3-88cb-d430f82b7744" start_index="0" end="a370785d-9c6d-489c-b9a9-e0726a219321" end_index="4" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-18.0277201148332" eyeY="39.850443164437" eyeZ="31.9324206462814" lookX="9.2928" lookY="-10.0672" lookZ="-44.9152" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

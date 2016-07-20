@@ -1,23 +1,19 @@
-<Workspace Version="0.8.0.950" X="-272.015480165346" Y="-118.234914103245" zoom="1.703916824555" Name="Cell Value Format Condition" ID="14152ace-45b6-4531-8a58-0939fa4e2cab" Description="This node creates a format condition based on a cell value. " Category="Archi-lab_Bumblebee.Format">
+<Workspace Version="1.0.0.1180" X="-272.015480165346" Y="-118.234914103245" zoom="1.703916824555" Name="Cell Value Format Condition" Description="This node creates a format condition based on a cell value. " ID="14152ace-45b6-4531-8a58-0939fa4e2cab" Category="Archi-lab_Bumblebee.Format">
   <NamespaceResolutionMap />
   <Elements>
-    <DSIronPythonNode.PythonNode guid="06e93ea2-b573-4034-b08e-f5f0fd6a20d2" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="580" y="207" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="3">
-      <Script>#Copyright(c) 2015, David Mans, Konrad Sobon
+    <PythonNodeModels.PythonNode guid="06e93ea2-b573-4034-b08e-f5f0fd6a20d2" type="PythonNodeModels.PythonNode" nickname="Python Script" x="580" y="207" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="3">
+      <Script># Copyright(c) 2016, David Mans, Konrad Sobon
 # @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
 
 import clr
 import sys
 
-pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
-sys.path.append(pyt_path)
-
-import os
-import os.path
-appDataPath = os.getenv('APPDATA')
-bbPath = appDataPath + r"\Dynamo\0.8\packages\Bumblebee\extra"
-if bbPath not in sys.path:
-	sys.path.Add(bbPath)
-
+#import main module
+a1 = System.AppDomain.CurrentDomain.GetAssemblies()
+p1 = [a.Location for a in a1 if 'bbIcons,' in a.FullName][0]
+p2 = System.IO.Path.GetDirectoryName(p1).rsplit('\\',1)[0]
+bb_path = '%s\\extra\\' %p2
+sys.path.append(bb_path)
 import bumblebee as bb
 
 #The inputs to this node will be stored as a list in the IN variable.
@@ -38,25 +34,30 @@ if graphicStyle != None:
 
 #Assign your output to the OUT variable
 OUT = formatCondition</Script>
-    </DSIronPythonNode.PythonNode>
-    <Dynamo.Nodes.Symbol guid="1ba39008-4a64-44ec-815a-cab4dd342103" type="Dynamo.Nodes.Symbol" nickname="Input" x="360.406099669003" y="178.879151926058" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="1ba39008-4a64-44ec-815a-cab4dd342103" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="360.406099669003" y="178.879151926058" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
       <Symbol value="OperatorType" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Symbol guid="26dbb79a-1cc7-4770-ae57-939634ecc82c" type="Dynamo.Nodes.Symbol" nickname="Input" x="359.900364886394" y="234.49059908367" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="26dbb79a-1cc7-4770-ae57-939634ecc82c" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="359.900364886394" y="234.49059908367" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
       <Symbol value="Values" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Symbol guid="1824b9f7-822a-4f1d-a572-d64e45e8fd9a" type="Dynamo.Nodes.Symbol" nickname="Input" x="360.238497501382" y="291.367847337678" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="1824b9f7-822a-4f1d-a572-d64e45e8fd9a" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="360.238497501382" y="291.367847337678" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
       <Symbol value="GraphicStyle" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Output guid="733d31f9-dd03-4ec7-b45b-37899a98d686" type="Dynamo.Nodes.Output" nickname="Output" x="740.468926687267" y="206.440698983204" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="733d31f9-dd03-4ec7-b45b-37899a98d686" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="740.468926687267" y="206.440698983204" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <Symbol value="FormatCondition" />
-    </Dynamo.Nodes.Output>
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
   </Elements>
   <Connectors>
-    <Dynamo.Models.ConnectorModel start="06e93ea2-b573-4034-b08e-f5f0fd6a20d2" start_index="0" end="733d31f9-dd03-4ec7-b45b-37899a98d686" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="1ba39008-4a64-44ec-815a-cab4dd342103" start_index="0" end="06e93ea2-b573-4034-b08e-f5f0fd6a20d2" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="26dbb79a-1cc7-4770-ae57-939634ecc82c" start_index="0" end="06e93ea2-b573-4034-b08e-f5f0fd6a20d2" end_index="1" portType="0" />
-    <Dynamo.Models.ConnectorModel start="1824b9f7-822a-4f1d-a572-d64e45e8fd9a" start_index="0" end="06e93ea2-b573-4034-b08e-f5f0fd6a20d2" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="06e93ea2-b573-4034-b08e-f5f0fd6a20d2" start_index="0" end="733d31f9-dd03-4ec7-b45b-37899a98d686" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1ba39008-4a64-44ec-815a-cab4dd342103" start_index="0" end="06e93ea2-b573-4034-b08e-f5f0fd6a20d2" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="26dbb79a-1cc7-4770-ae57-939634ecc82c" start_index="0" end="06e93ea2-b573-4034-b08e-f5f0fd6a20d2" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1824b9f7-822a-4f1d-a572-d64e45e8fd9a" start_index="0" end="06e93ea2-b573-4034-b08e-f5f0fd6a20d2" end_index="2" portType="0" />
   </Connectors>
   <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
 </Workspace>
