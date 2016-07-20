@@ -1,0 +1,62 @@
+<Workspace Version="1.0.0.1180" X="-74.899596453125" Y="-422.344856328125" zoom="1.545620359375" Name="Line Chart Graph Style" Description="This node controls appearance of the graph area of the chart. In this case it will be the line portion of the Line Chart." ID="250384d4-98a8-4965-92bb-f74ab12f5aa4" Category="Archi-lab_Bumblebee.Styles">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="4921836b-cc58-48b6-8c6c-295c487aa8a8" type="PythonNodeModels.PythonNode" nickname="Python Script" x="618.17128049149" y="398.369829237471" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="3">
+      <Script># Copyright(c) 2016, David Mans, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
+
+import clr
+import sys
+
+#import main module
+a1 = System.AppDomain.CurrentDomain.GetAssemblies()
+p1 = [a.Location for a in a1 if 'bbIcons,' in a.FullName][0]
+p2 = System.IO.Path.GetDirectoryName(p1).rsplit('\\',1)[0]
+bb_path = '%s\\extra\\' %p2
+sys.path.append(bb_path)
+import bumblebee as bb
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+labelStyle = IN[0]
+lineStyle = IN[1]
+markerStyle = IN[2]
+
+lineGraphStyle = bb.BBLineGraphStyle()
+
+if labelStyle != None:
+	lineGraphStyle.labelStyle = labelStyle
+if lineStyle != None:
+	lineGraphStyle.lineStyle = lineStyle
+if markerStyle != None:
+	lineGraphStyle.markerStyle = markerStyle
+	
+OUT = lineGraphStyle</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="d5eddf41-7d1f-481e-b64b-8d8a1f2ec37e" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="144.860667171635" y="367.066112248639" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="LabelStyle: var = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="11e0c97a-4dc0-47c1-ae4f-dfa310053823" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="150.626900214207" y="430.414402528079" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="LineStyle: var = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="443f42ec-95c3-4004-9270-54fe081a303c" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="141.217217999532" y="492.173555100544" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="MarkerStyle: var = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="c9c5e065-6535-4480-a252-f69c13625b17" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="813.847714170755" y="398.768593199274" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="GraphStyle" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="4921836b-cc58-48b6-8c6c-295c487aa8a8" start_index="0" end="c9c5e065-6535-4480-a252-f69c13625b17" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d5eddf41-7d1f-481e-b64b-8d8a1f2ec37e" start_index="0" end="4921836b-cc58-48b6-8c6c-295c487aa8a8" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="11e0c97a-4dc0-47c1-ae4f-dfa310053823" start_index="0" end="4921836b-cc58-48b6-8c6c-295c487aa8a8" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="443f42ec-95c3-4004-9270-54fe081a303c" start_index="0" end="4921836b-cc58-48b6-8c6c-295c487aa8a8" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

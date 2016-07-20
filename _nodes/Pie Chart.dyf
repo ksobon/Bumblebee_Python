@@ -1,0 +1,314 @@
+<Workspace Version="1.0.0.1180" X="-288.672750288863" Y="-82.326915265585" zoom="1.22704736140834" Name="Pie Chart" Description="This node will generate a new Pie Chart in your currently running session of Excel." ID="5732b73f-72c2-4872-8e1a-e74b723547b1" Category="Archi-lab_Bumblebee.Charts">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="e3c65ce8-777d-46e5-8253-f2f578f1ade4" type="PythonNodeModels.PythonNode" nickname="Python Script" x="686.686826417944" y="284.000000000001" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="9">
+      <Script># Copyright(c) 2016, David Mans, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
+
+import clr
+import sys
+import System
+from System import Array
+from System.Collections.Generic import *
+
+clr.AddReferenceByName('Microsoft.Office.Interop.Excel, Version=11.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c')
+from Microsoft.Office.Interop import Excel
+System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo("en-US")
+from System.Runtime.InteropServices import Marshal
+
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+
+#import main module
+a1 = System.AppDomain.CurrentDomain.GetAssemblies()
+p1 = [a.Location for a in a1 if 'bbIcons,' in a.FullName][0]
+p2 = System.IO.Path.GetDirectoryName(p1).rsplit('\\',1)[0]
+bb_path = '%s\\extra\\' %p2
+sys.path.append(bb_path)
+import bumblebee as bb
+
+import string
+import re
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+runMe = IN[0]
+sheetName = IN[1]
+size = IN[2]
+title = IN[3]
+dataRange = IN[4]
+chartType = IN[5]
+legendStyle = IN[6]
+chartStyle = IN[7]
+graphStyle = IN[8]
+
+def LiveStream():
+	try:
+		xlApp = Marshal.GetActiveObject("Excel.Application")
+		xlApp.Visible = True
+		xlApp.DisplayAlerts = False
+		xlApp.ScreenUpdating = False
+		return xlApp
+	except:
+		return None
+
+def GetWidthHeight(origin, extent, ws):
+	left = origin.Left
+	top = origin.Top
+	width = ws.Range[origin, extent].Width
+	height = ws.Range[origin, extent].Height
+	return [left, top, width, height]
+
+def FormatBorder(border, bStyle):
+	if bStyle.lineType != None:
+		border.LineStyle = bStyle.LineType()
+	if bStyle.weight != None:
+		border.Weight = bStyle.Weight()
+	if bStyle.color != None:
+		border.Color = bStyle.Color()
+	return None
+
+def FormatText(text, tStyle):
+	if tStyle.name != None:
+		text.Name = tStyle.Name()
+	if tStyle.size != None:
+		text.Size = tStyle.Size()
+	if tStyle.color != None:
+		text.Color = tStyle.Color()
+	if tStyle.bold != None:
+		text.Bold = tStyle.Bold()
+	if tStyle.italic != None:
+		text.Italic = tStyle.Italic()
+	if tStyle.underline != None:
+		text.Underline = tStyle.Underline()
+	if tStyle.strikethrough != None:
+		text.Strikethrough = tStyle.Strikethrough()
+	return None
+
+def FormatFill(fill, fStyle):
+	if fStyle.patternType != None:
+		fill.Pattern = fStyle.PatternType()	
+	if fStyle.patternColor != None:
+		fill.PatternColor = fStyle.PatternColor()	
+	if fStyle.backgroundColor != None:
+		fill.Color = fStyle.BackgroundColor()
+	return None
+
+if runMe:
+	message = None
+	try:
+		xlApp = LiveStream()
+		errorReport = None
+		wb = xlApp.ActiveWorkbook
+		ws = xlApp.Sheets(sheetName)
+		# get chart size and location from range
+		origin = ws.Cells(bb.xlRange(size)[1], bb.xlRange(size)[0])
+		extent = ws.Cells(bb.xlRange(size)[3], bb.xlRange(size)[2])
+		left = GetWidthHeight(origin, extent, ws)[0]
+		top = GetWidthHeight(origin, extent, ws)[1]
+		width = GetWidthHeight(origin, extent, ws)[2]
+		height = GetWidthHeight(origin, extent, ws)[3]
+		# get existing chart with same name or create new
+		if ws.ChartObjects().Count &gt; 0:
+			for i in range(1, ws.ChartObjects().Count + 1, 1):
+				if ws.ChartObjects().Item(i).Name == title:
+					chartObject = ws.ChartObjects().Item(i)
+		else:
+			chartObjects = ws.ChartObjects()
+			chartObject = chartObjects.Add(left, top, width, height)
+			if title != None:
+				chartObject.Name = title
+			else:
+				chartObject.Name = "Untitled"
+		# update chart size
+		if chartObject.Left != left:
+			chartObject.Left = left
+		if chartObject.Top != top:
+			chartObject.Top = top
+		if chartObject.Width != width:
+			chartObject.Width = width
+		if chartObject.Height != height:
+			chartObject.Height = height
+		# get chart object
+		xlChart = chartObject.Chart
+		# set chart type
+		xlChart.ChartType = chartType
+		# set chart data source range
+		dataOrigin = ws.Cells(bb.xlRange(dataRange)[1], bb.xlRange(dataRange)[0])
+		dataExtent = ws.Cells(bb.xlRange(dataRange)[3], bb.xlRange(dataRange)[2])
+		xlChart.SetSourceData(ws.Range[dataOrigin, dataExtent])
+		# set chart title
+		if title != None:
+			xlChart.HasTitle = True
+			xlChart.ChartTitle.Text = title
+		else:
+			xlChart.HasTitle = False
+
+		#########################
+		### Legend Formatting ###
+		#########################
+
+		if xlChart.HasLegend:
+			xlChart.Legend.Clear()
+		# set text style for legend
+		if legendStyle != None:
+			xlChart.HasLegend = True
+			# set legend box position
+			if legendStyle.position != None:
+				xlChart.Legend.Position = legendStyle.Position()
+			# set legend text style
+			if legendStyle.textStyle != None:
+				FormatText(xlChart.Legend.Font, legendStyle.textStyle)
+			# set border style for legend
+			if legendStyle.borderStyle != None:
+				FormatBorder(xlChart.Legend.Border, legendStyle.borderStyle)
+			#set fill style for legend
+			if legendStyle.fillStyle != None:
+				FormatFill(xlChart.Legend.Interior, legendStyle.fillStyle)
+			# change default Legend labels to range
+			if legendStyle.labels != None:
+				labels = legendStyle.Labels()
+				chartSeries = xlChart.Seriescollection(1)
+				catOrigin = ws.Cells(labels[1], labels[0])
+				catExtent = ws.Cells(labels[3], labels[2])
+				chartSeries.XValues = ws.Range[catOrigin, catExtent]
+
+		########################
+		### Chart Formatting ###
+		########################
+
+		if chartStyle != None:
+			if chartStyle.borderStyle != None:
+				xlChart.ChartArea.Format.Line.Visible = True
+				FormatBorder(xlChart.ChartArea.Border, chartStyle.borderStyle)
+			else:
+				xlChart.ChartArea.Format.Line.Visible = False
+			if chartStyle.fillStyle != None:
+				xlChart.ChartArea.Fill.Visible = True
+				xlChart.PlotArea.Fill.Visible = True
+				FormatFill(xlChart.ChartArea.Interior, chartStyle.fillStyle)
+			else:
+				xlChart.ChartArea.Fill.Visible = False
+				xlChart.PlotArea.Fill.Visible = False
+			if chartStyle.roundCorners != None:
+				xlChart.ChartArea.RoundedCorners = chartStyle.RoundCorners()
+
+		########################
+		### Graph Formatting ###
+		########################
+
+		xlChart.SeriesCollection(1).ClearFormats()
+		# set graph style
+		if graphStyle != None:
+			# set graph fill style
+			if graphStyle.fillStyle != None:
+				count = xlChart.SeriesCollection(1).Points().Count
+				for i in range(1, count + 1, 1):
+					FormatFill(xlChart.SeriesCollection(1).Points(i).Interior, graphStyle.fillStyle)
+			# set graph border style
+			if graphStyle.borderStyle != None:
+				count = xlChart.SeriesCollection(1).Points().Count
+				for i in range(1, count + 1, 1):
+					FormatBorder(xlChart.SeriesCollection(1).Points(i).Border, graphStyle.borderStyle)
+
+			########################
+			### Label Formatting ###
+			########################
+
+			# set label style
+			if graphStyle.labelStyle != None:
+				if xlChart.SeriesCollection(1).HasDataLabels == True:
+					xlChart.SeriesCollection(1).DataLabels().Delete()
+					xlChart.SeriesCollection(1).HasDataLabels = True
+				else:
+					xlChart.SeriesCollection(1).HasDataLabels = True
+				gls = graphStyle.labelStyle
+				if gls.percentage != None:
+					xlChart.SeriesCollection(1).DataLabels().ShowPercentage = gls.Percentage()
+				if gls.seriesName != None:
+					xlChart.SeriesCollection(1).DataLabels().ShowSeriesName = gls.SeriesName()
+				if gls.value != None:
+					xlChart.SeriesCollection(1).DataLabels().ShowValue = gls.Value()
+				if gls.legendKey != None:
+					xlChart.SeriesCollection(1).DataLabels().ShowLegendKey = gls.LegendKey()
+				if gls.separator != None:
+					xlChart.SeriesCollection(1).DataLabels().Separator = gls.Separator()
+				if gls.labelPosition != None:
+					xlChart.SeriesCollection(1).DataLabels().Position = gls.LabelPosition()
+				if gls.leaderLines != None:
+					xlChart.SeriesCollection(1).HasLeaderLines = gls.LeaderLines()
+				# set label fill settings
+				if gls.fillStyle != None:
+					FormatFill(xlChart.SeriesCollection(1).DataLabels().Interior, gls.fillStyle)
+				# set label text style
+				if gls.textStyle != None:
+					FormatText(xlChart.SeriesCollection(1).DataLabels().Font, gls.textStyle)
+				# set label border style
+				if gls.borderStyle != None:
+					FormatBorder(xlChart.SeriesCollection(1).DataLabels().Border, gls.borderStyle)
+			if graphStyle.explosion != None:
+				xlChart.SeriesCollection(1).Explosion = graphStyle.Explosion()
+		xlApp.ScreenUpdating = True
+	except:
+		# if error accurs anywhere in the process catch it
+		import traceback
+		errorReport = traceback.format_exc()
+else:
+	errorReport = "RunMe is set to False. Please set RunMe to True to create/update chart."
+
+if errorReport == None:
+	OUT = "Success!"
+else:
+	OUT = errorReport</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="06568055-90da-45b4-a742-d5029693db4d" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="319.007033947776" y="183.525115302527" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="RunIt:bool=false" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="2e6a0b32-f88d-4e69-9204-149bdb45124e" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="317.623272231935" y="239.3290842796" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="SheetName" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="4c393feb-64a1-421f-b13f-92f1d8c0a64f" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="318.652647809518" y="294.74287041809" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="SizeRange" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="08d89d31-9c0f-4375-948e-085ebcfe3704" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="318.000031307896" y="349.035328503778" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="Title:var=null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="994678ed-2397-49e7-9f9e-e5d72a574310" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="317.956640258713" y="405.018781122089" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="DataRange" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="2d08ca87-6aa7-4afe-bb79-71d151a3fd24" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="318.003538987988" y="461.455519332667" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="PieChartType" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="b1efc65d-a51a-483c-93c3-7d7172d17de0" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="318.112925036217" y="519.346913204397" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="LegendStyle:var=null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="d16c5e88-b922-48e1-a2a4-ff51eb96b3d2" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="319.783986971568" y="574.114955301884" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="ChartStyle:var=null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="e8fc297e-aeaf-463f-9bd9-6ee7109eec41" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="321.455048906919" y="630.965231915534" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="GraphStyle:var=null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="b47968e8-2b91-4d0f-b31d-a2c0d5918571" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="885.459520121991" y="282.718382515757" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="OUT" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="e3c65ce8-777d-46e5-8253-f2f578f1ade4" start_index="0" end="b47968e8-2b91-4d0f-b31d-a2c0d5918571" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="06568055-90da-45b4-a742-d5029693db4d" start_index="0" end="e3c65ce8-777d-46e5-8253-f2f578f1ade4" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2e6a0b32-f88d-4e69-9204-149bdb45124e" start_index="0" end="e3c65ce8-777d-46e5-8253-f2f578f1ade4" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4c393feb-64a1-421f-b13f-92f1d8c0a64f" start_index="0" end="e3c65ce8-777d-46e5-8253-f2f578f1ade4" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="08d89d31-9c0f-4375-948e-085ebcfe3704" start_index="0" end="e3c65ce8-777d-46e5-8253-f2f578f1ade4" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="994678ed-2397-49e7-9f9e-e5d72a574310" start_index="0" end="e3c65ce8-777d-46e5-8253-f2f578f1ade4" end_index="4" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2d08ca87-6aa7-4afe-bb79-71d151a3fd24" start_index="0" end="e3c65ce8-777d-46e5-8253-f2f578f1ade4" end_index="5" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b1efc65d-a51a-483c-93c3-7d7172d17de0" start_index="0" end="e3c65ce8-777d-46e5-8253-f2f578f1ade4" end_index="6" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d16c5e88-b922-48e1-a2a4-ff51eb96b3d2" start_index="0" end="e3c65ce8-777d-46e5-8253-f2f578f1ade4" end_index="7" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e8fc297e-aeaf-463f-9bd9-6ee7109eec41" start_index="0" end="e3c65ce8-777d-46e5-8253-f2f578f1ade4" end_index="8" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

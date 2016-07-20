@@ -1,0 +1,210 @@
+<Workspace Version="1.0.0.1180" X="-330.544291523247" Y="-175.874693759968" zoom="1.27771698410772" Name="Format Excel" Description="This node will allow you to apply formatting to a specific range within the document. You can format a single range on a single sheet or multiple ranges on multiple sheets at the same time." ID="272cf006-9859-4e7e-850f-0dae48a8bbde" Category="Archi-lab_Bumblebee.Format">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="b7ca48cd-1e4e-47ff-be69-e5b8c67a4ffa" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="329.090264469143" y="254.774698358578" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="filePath: var = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="21110555-b88b-4a1d-b79e-6faf894a2481" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="332.839027507045" y="323.72569329529" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="RunIt: bool = false" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="ef8fe2b4-87ad-402e-9e3e-eba21024d58f" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="407.132363921259" y="404.350647746916" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="BB Style" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="73203ef2-364f-43eb-94da-827ce4c629cc" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="846.153950678817" y="288.620025508107" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="OUT" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="3973a2a1-d615-42f9-9b6c-b5e4b3137078" type="PythonNodeModels.PythonNode" nickname="Python Script" x="641.724558567548" y="290.084201023846" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="3">
+      <Script># Copyright(c) 2016, David Mans, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
+
+import clr
+import sys
+import System
+from System import Array
+from System.Collections.Generic import *
+
+clr.AddReferenceByName('Microsoft.Office.Interop.Excel, Version=11.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c')
+from Microsoft.Office.Interop import Excel
+System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo("en-US")
+from System.Runtime.InteropServices import Marshal
+
+#import main module
+a1 = System.AppDomain.CurrentDomain.GetAssemblies()
+p1 = [a.Location for a in a1 if 'bbIcons,' in a.FullName][0]
+p2 = System.IO.Path.GetDirectoryName(p1).rsplit('\\',1)[0]
+bb_path = '%s\\extra\\' %p2
+sys.path.append(bb_path)
+import bumblebee as bb
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+filePath = IN[0]
+runMe = IN[1]
+styles = IN[2]
+
+def StyleData(ws, gs, cellRange):
+	# get range
+	if ":" in cellRange:
+		origin = ws.Cells(bb.xlRange(cellRange)[1], bb.xlRange(cellRange)[0])
+		extent = ws.Cells(bb.xlRange(cellRange)[3], bb.xlRange(cellRange)[2])
+		rng = ws.Range[origin, extent]
+	else:
+		# this is a named cell range
+		rng = ws.Range(cellRange)
+	# format cell fill style
+	if gs.fillStyle != None:
+		fs = gs.fillStyle
+		if fs.patternType != None:
+			rng.Interior.Pattern = fs.PatternType()
+		if fs.backgroundColor != None:
+			rng.Interior.Color = fs.BackgroundColor()
+		if fs.patternColor != None:
+			rng.Interior.PatternColor = fs.PatternColor()
+	# format cell text style
+	if gs.textStyle != None:
+		ts = gs.textStyle
+		if ts.name != None:
+			rng.Font.Name = ts.Name()
+		if ts.size != None:
+			rng.Font.Size = ts.Size()
+		if ts.color != None:
+			rng.Font.Color = ts.Color()
+		if ts.horizontalAlign != None:
+			rng.HorizontalAlignment = ts.HorizontalAlign()
+		if ts.verticalAlign != None:
+			rng.VerticalAlignment = ts.VerticalAlign()
+		if ts.bold != None:
+			rng.Font.Bold = ts.Bold()
+		if ts.italic != None:
+			rng.Font.Italic = ts.Italic()
+		if ts.underline != None:
+			rng.Font.Underline = ts.Underline()
+		if ts.strikethrough != None:
+			rng.Font.Strikethrough = ts.Strikethrough()
+	# format cell border style
+	if gs.borderStyle != None:
+		bs = gs.borderStyle
+		if bs.lineType != None:
+			rng.Borders.LineStyle = bs.LineType()
+		if bs.weight != None:
+			rng.Borders.Weight = bs.Weight()
+		if bs.color != None:
+			rng.Borders.Color = bs.Color()
+
+	return ws
+
+def SetUp(xlApp):
+	# supress updates and warning pop ups
+	xlApp.Visible = False
+	xlApp.DisplayAlerts = False
+	xlApp.ScreenUpdating = False
+	return xlApp
+
+def ExitExcel(filePath, xlApp, wb, ws):
+	def CleanUp(_list):
+		if isinstance(_list, list):
+			for i in _list:
+				Marshal.ReleaseComObject(i)
+		else:
+			Marshal.ReleaseComObject(_list)
+		return None
+	
+	wb.SaveAs(unicode(filePath))
+	xlApp.ActiveWorkbook.Close(False)
+	xlApp.ScreenUpdating = True
+	CleanUp([ws,wb,xlApp])
+	return None
+
+def LiveStream():
+	try:
+		xlApp = Marshal.GetActiveObject("Excel.Application")
+		xlApp.Visible = True
+		xlApp.DisplayAlerts = False
+		return xlApp
+	except:
+		return None
+
+def Flatten(*args):
+    for x in args:
+        if hasattr(x, '__iter__'):
+            for y in Flatten(*x):
+                yield y
+        else:
+            yield x
+
+# flatten Styles list if its a nested list
+if isinstance(styles, list):
+	if any(isinstance(x, list) for x in styles):
+		styles = list(Flatten(styles))
+
+if runMe:
+	try:
+		errorReport = None
+		if filePath == None:
+			# run excel in a live mode
+			xlApp = LiveStream()
+			# if excel is running and data is being written to single sheet
+			if not isinstance(styles, list):
+				wb = xlApp.ActiveWorkbook
+				try:
+					if styles.sheetName == None:
+						ws = xlApp.ActiveSheet
+					else:
+						ws = xlApp.Sheets(styles.SheetName())
+				except:
+					pass
+				StyleData(ws, styles.GraphicStyle(), styles.CellRange())
+			# if excel is running and data is being written to multiple sheets
+			else:
+				wb = xlApp.ActiveWorkbook
+				for i in styles:
+					ws = xlApp.Sheets(i.SheetName())
+					StyleData(ws , i.GraphicStyle(), i.CellRange())
+		else:
+			try:
+				xlApp = SetUp(Excel.ApplicationClass())
+				# if excel is closed and data is being written to single sheet
+				if not isinstance(styles, list):
+					xlApp.Workbooks.open(unicode(filePath))
+					wb = xlApp.ActiveWorkbook
+					ws = xlApp.Sheets(styles.SheetName())
+					StyleData(ws, styles.GraphicStyle(), styles.CellRange())
+					ExitExcel(filePath, xlApp, wb, ws)
+				# if excel is closed and data is being written to multiple sheets
+				else:
+					xlApp.Workbooks.open(unicode(filePath))
+					wb = xlApp.ActiveWorkbook
+					for i in styles:
+						ws = xlApp.Sheets(i.SheetName())
+						StyleData(ws , i.GraphicStyle(), i.CellRange())
+					ExitExcel(filePath, xlApp, wb, ws)
+			except:
+				xlApp.Quit()
+				Marshal.ReleaseComObject(xlApp)
+	except:
+			# if error accurs anywhere in the process catch it
+			import traceback
+			errorReport = traceback.format_exc()
+else:
+	errorReport = "Run Me is set to False. Please set \nto True if you wish to write data \nto Excel."
+
+if errorReport == None:
+	OUT = "Success!"
+else:
+	OUT = errorReport</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="b7ca48cd-1e4e-47ff-be69-e5b8c67a4ffa" start_index="0" end="3973a2a1-d615-42f9-9b6c-b5e4b3137078" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="21110555-b88b-4a1d-b79e-6faf894a2481" start_index="0" end="3973a2a1-d615-42f9-9b6c-b5e4b3137078" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="ef8fe2b4-87ad-402e-9e3e-eba21024d58f" start_index="0" end="3973a2a1-d615-42f9-9b6c-b5e4b3137078" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3973a2a1-d615-42f9-9b6c-b5e4b3137078" start_index="0" end="73203ef2-364f-43eb-94da-827ce4c629cc" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

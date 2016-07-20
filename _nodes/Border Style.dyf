@@ -1,23 +1,19 @@
-<Workspace Version="0.8.0.950" X="-391.946339697779" Y="-230.883219472814" zoom="1.87774416077545" Name="Border Style" ID="71cda78b-ebea-4608-a791-65119dc84b4c" Description="This node can be used to change default formatting of Excel cells using Format Excel of Conditionally Format Excel Nodes. " Category="Archi-lab_Bumblebee.Styles">
+<Workspace Version="1.0.0.1180" X="-49.946339697779" Y="-239.883219472814" zoom="1.87774416077545" Name="Border Style" Description="This node can be used to change default formatting of Excel cells using Format Excel of Conditionally Format Excel Nodes. " ID="71cda78b-ebea-4608-a791-65119dc84b4c" Category="Archi-lab_Bumblebee.Styles">
   <NamespaceResolutionMap />
   <Elements>
-    <DSIronPythonNode.PythonNode guid="f20526b0-1a56-4927-997e-34eff8cb3755" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="503" y="252" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="3">
-      <Script>#Copyright(c) 2015, David Mans, Konrad Sobon
+    <PythonNodeModels.PythonNode guid="f20526b0-1a56-4927-997e-34eff8cb3755" type="PythonNodeModels.PythonNode" nickname="Python Script" x="503" y="252" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="3">
+      <Script># Copyright(c) 2016, David Mans, Konrad Sobon
 # @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
 
 import clr
 import sys
 
-pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
-sys.path.append(pyt_path)
-
-import os
-import os.path
-appDataPath = os.getenv('APPDATA')
-bbPath = appDataPath + r"\Dynamo\0.8\packages\Bumblebee\extra"
-if bbPath not in sys.path:
-	sys.path.Add(bbPath)
-
+#import main module
+a1 = System.AppDomain.CurrentDomain.GetAssemblies()
+p1 = [a.Location for a in a1 if 'bbIcons,' in a.FullName][0]
+p2 = System.IO.Path.GetDirectoryName(p1).rsplit('\\',1)[0]
+bb_path = '%s\\extra\\' %p2
+sys.path.append(bb_path)
 import bumblebee as bb
 
 #The inputs to this node will be stored as a list in the IN variable.
@@ -38,25 +34,30 @@ if color != None:
 
 #Assign your output to the OUT variable
 OUT = borderStyle</Script>
-    </DSIronPythonNode.PythonNode>
-    <Dynamo.Nodes.Symbol guid="15154da8-bb50-419e-97a4-6de62e7ea3af" type="Dynamo.Nodes.Symbol" nickname="Input" x="354.392690614059" y="231.904167191345" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <Symbol value="LineType" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Symbol guid="122e7e4f-8933-4387-aedf-e7ae122e7a4a" type="Dynamo.Nodes.Symbol" nickname="Input" x="304.895856950261" y="289.288033663153" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <Symbol value="LineWeightType" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Symbol guid="df4cf790-4d25-4145-b6ce-b8b2f1ab7f16" type="Dynamo.Nodes.Symbol" nickname="Input" x="346.580177864339" y="348.08031444366" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <Symbol value="LineColor" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Output guid="ae0163cc-ac8a-4bf8-ba1c-63125e293eec" type="Dynamo.Nodes.Output" nickname="Output" x="696.362474595273" y="252.223560784852" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="15154da8-bb50-419e-97a4-6de62e7ea3af" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="258.000432402881" y="227.643735889193" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="LineType: var = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="122e7e4f-8933-4387-aedf-e7ae122e7a4a" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="212.231476128465" y="288.222925837615" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="LineWeightType: var = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="df4cf790-4d25-4145-b6ce-b8b2f1ab7f16" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="253.383243129774" y="346.482652705353" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="LineColor: var = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="ae0163cc-ac8a-4bf8-ba1c-63125e293eec" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="696.362474595273" y="252.223560784852" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <Symbol value="OUT" />
-    </Dynamo.Nodes.Output>
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
   </Elements>
   <Connectors>
-    <Dynamo.Models.ConnectorModel start="f20526b0-1a56-4927-997e-34eff8cb3755" start_index="0" end="ae0163cc-ac8a-4bf8-ba1c-63125e293eec" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="15154da8-bb50-419e-97a4-6de62e7ea3af" start_index="0" end="f20526b0-1a56-4927-997e-34eff8cb3755" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="122e7e4f-8933-4387-aedf-e7ae122e7a4a" start_index="0" end="f20526b0-1a56-4927-997e-34eff8cb3755" end_index="1" portType="0" />
-    <Dynamo.Models.ConnectorModel start="df4cf790-4d25-4145-b6ce-b8b2f1ab7f16" start_index="0" end="f20526b0-1a56-4927-997e-34eff8cb3755" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f20526b0-1a56-4927-997e-34eff8cb3755" start_index="0" end="ae0163cc-ac8a-4bf8-ba1c-63125e293eec" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="15154da8-bb50-419e-97a4-6de62e7ea3af" start_index="0" end="f20526b0-1a56-4927-997e-34eff8cb3755" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="122e7e4f-8933-4387-aedf-e7ae122e7a4a" start_index="0" end="f20526b0-1a56-4927-997e-34eff8cb3755" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="df4cf790-4d25-4145-b6ce-b8b2f1ab7f16" start_index="0" end="f20526b0-1a56-4927-997e-34eff8cb3755" end_index="2" portType="0" />
   </Connectors>
   <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
 </Workspace>

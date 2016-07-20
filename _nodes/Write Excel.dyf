@@ -1,37 +1,43 @@
-<Workspace Version="0.8.0.950" X="-449.653508340367" Y="-237.597028615538" zoom="1.74331992875497" Name="Write Excel" ID="72e88648-ec17-4934-8376-d6c1f6183d67" Description="This node will write data to Excel file and based on how your BBData nodes are structured it will either override the exsting file, create a new one and write a single worksheet or write multiple worksheets. " Category="Archi-lab_Bumblebee.Write">
+<Workspace Version="1.0.0.1180" X="-151.113798361236" Y="-100.400094267775" zoom="1.47618023926361" Name="Write Excel" Description="This node will write data to Excel file and based on how your BBData nodes are structured it will either override the exsting file, create a new one and write a single worksheet or write multiple worksheets. " ID="72e88648-ec17-4934-8376-d6c1f6183d67" Category="Archi-lab_Bumblebee.Write">
   <NamespaceResolutionMap />
   <Elements>
-    <DSIronPythonNode.PythonNode guid="962c4444-7df7-418b-b5b9-da242fbde32b" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="605" y="273" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="4">
-      <Script>#Copyright(c) 2015, David Mans, Konrad Sobon
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="c356599c-e221-4b9a-a3dd-190629348078" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="287.083513067391" y="225.405706350634" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="filePath: var = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="4d777cdc-df53-47ec-9b9f-985d8eff7c8b" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="285.620111827011" y="289.469508381868" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="RunIt: bool = false" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="d9a7965b-5404-4321-8223-4c75029f4002" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="260.774012720888" y="347.903534044665" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="ByColumn: bool = false" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="d89038f9-dcf9-4a57-b7ef-fbbef3e8fe73" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="386.595845545624" y="405.286719471978" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="BBData" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="b7ab4540-a43e-493c-bc31-eaf56881c907" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="737.092191370107" y="277.979033845477" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="OUT" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="89ad47f9-938f-4826-9455-2f6dd539fa7c" type="PythonNodeModels.PythonNode" nickname="Python Script" x="571.268603531058" y="278.240651582839" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="4">
+      <Script># Copyright(c) 2016, David Mans, Konrad Sobon
 # @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
 
 import clr
 import sys
-clr.AddReference('ProtoGeometry')
-from Autodesk.DesignScript.Geometry import *
-
 import System
 from System import Array
 from System.Collections.Generic import *
 
-pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
-sys.path.append(pyt_path)
-
-import os.path
-import os
-
-appDataPath = os.getenv('APPDATA')
-bbPath = appDataPath + r"\Dynamo\0.8\packages\Bumblebee\extra"
-if bbPath not in sys.path:
-	sys.path.Add(bbPath)
-
-import bumblebee as bb
-
 clr.AddReferenceByName('Microsoft.Office.Interop.Excel, Version=11.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c')
 from Microsoft.Office.Interop import Excel
-
 System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo("en-US")
 from System.Runtime.InteropServices import Marshal
+
+#import main module
+a1 = System.AppDomain.CurrentDomain.GetAssemblies()
+p1 = [a.Location for a in a1 if 'bbIcons,' in a.FullName][0]
+p2 = System.IO.Path.GetDirectoryName(p1).rsplit('\\',1)[0]
+bb_path = '%s\\extra\\' %p2
+sys.path.append(bb_path)
+import bumblebee as bb
 
 #The inputs to this node will be stored as a list in the IN variable.
 dataEnteringNode = IN
@@ -42,7 +48,6 @@ byColumn = IN[2]
 data = IN[3]
 
 def LiveStream():
-	# Checks if Excel is already open
 	try:
 		xlApp = Marshal.GetActiveObject("Excel.Application")
 		xlApp.Visible = True
@@ -100,7 +105,7 @@ def ExitExcel(filePath, xlApp, wb, ws):
 			Marshal.ReleaseComObject(_list)
 		return None
 	
-	wb.SaveAs(str(filePath))
+	wb.SaveAs(unicode(filePath))
 	xlApp.ActiveWorkbook.Close(False)
 	xlApp.ScreenUpdating = True
 	CleanUp([ws,wb,xlApp])
@@ -114,95 +119,104 @@ def Flatten(*args):
         else:
             yield x
 
-if any(isinstance(x, list) for x in data):
-	data = list(Flatten(data))
+def WorksheetExists(wb, name):
+	for i in wb.Sheets:
+		if i.Name == name:
+			return True
+			break
+		else:
+			continue
+	return False
+
+if isinstance(data, list):
+	if any(isinstance(x, list) for x in data):
+		data = list(Flatten(data))
+
+live = False
 
 if runMe:
-	message = None
-	if LiveStream() == None:
-		if os.path.isfile(str(filePath)):
-			# if excel file already exists and data is being written
-			# to single sheet
-			if not isinstance(data, list):
-				xlApp = SetUp(Excel.ApplicationClass())
-				xlApp.Workbooks.open(str(filePath))
-				wb = xlApp.ActiveWorkbook
-				ws = xlApp.Sheets(data.SheetName())
-				ws.Cells.ClearContents()
-				ws.Cells.Clear()
-				WriteData(ws, data.Data(), byColumn, data.Origin())
-				ExitExcel(filePath, xlApp, wb, ws)
-			# if excel file already exists but data is being written
-			# to multiple sheets
-			else:
-				xlApp = SetUp(Excel.ApplicationClass())
-				xlApp.Workbooks.open(str(filePath))
-				wb = xlApp.ActiveWorkbook
-				sheetNameSet = set([x.SheetName() for x in data])
-				for i in range(0,len(sheetNameSet),1):
-					wb.Worksheets[i+1].Cells.ClearContents()
-					wb.Worksheets[i+1].Cells.Clear()
-				for i in data:
-					ws = xlApp.Sheets(i.SheetName())
-					WriteData(ws, i.Data(), byColumn, i.Origin())
-				ExitExcel(filePath, xlApp, wb, ws)
+	try:
+		errorReport = None
+		if filePath == None:
+			# run excel in live mode
+			xlApp = LiveStream()
+			live = True
+			wb = xlApp.ActiveWorkbook
 		else:
-			# if excel file doesn't exist and data is being written
-			# to a single sheet
-			if not isinstance(data, list):
-				xlApp = SetUp(Excel.ApplicationClass())
-				wb = xlApp.Workbooks.Add()
-				ws = wb.Worksheets[1]
-				ws.Name = data.SheetName()
-				WriteData(ws, data.Data(), byColumn, data.Origin())
-				ExitExcel(filePath, xlApp, wb, ws)
-			# if excel file doesn't exist and data is being written
-			# to multiple sheets
+			# run excel from a file on disk
+			xlApp = SetUp(Excel.ApplicationClass())
+			live = False
+			# if file exists open it
+			if System.IO.File.Exists(unicode(filePath)):
+				xlApp.Workbooks.open(unicode(filePath))
+				wb = xlApp.ActiveWorkbook
+			# if file doesn't exist just make a new one
 			else:
-				sheetNameSet = set([x.SheetName() for x in data])
-				sheetNameList = list(sheetNameSet)
-				xlApp = SetUp(Excel.ApplicationClass())
 				wb = xlApp.Workbooks.Add()
-				wb.Sheets.Add(After = wb.Sheets(wb.Sheets.Count), Count = len(sheetNameSet)-1)
-				for i in range(0,len(sheetNameSet),1):
-					wb.Worksheets[i+1].Name = sheetNameList[i]
-				for i in data:
+				if not isinstance(data, list):
+					# add and rename worksheet
+					ws = wb.Worksheets[1]
+					ws.Name = data.SheetName()
+				else:
+					for i in data:
+						# if worksheet doesn't exist add it and name it
+						if not WorksheetExists(wb, i.SheetName()):
+							wb.Sheets.Add(After = wb.Sheets(wb.Sheets.Count), Count = 1)
+							ws = wb.Worksheets[wb.Sheets.Count]
+							ws.Name = i.SheetName()
+		# data is a flat list - single sheet gets written
+		if not isinstance(data, list):
+			if WorksheetExists(wb, data.SheetName()):
+				ws = xlApp.Sheets(data.SheetName())
+			else:
+				wb.Sheets.Add(After = wb.Sheets(wb.Sheets.Count), Count = 1)
+				ws = wb.Worksheets[wb.Sheets.Count]
+				ws.Name = data.SheetName()
+			WriteData(ws, data.Data(), byColumn, data.Origin())
+			if not live:
+				ExitExcel(filePath, xlApp, wb, ws)
+		# data is a nested list - multiple sheets are written
+		else:
+			sheetNameSet = set([x.SheetName() for x in data])
+			for i in data:
+				if WorksheetExists(wb, i.SheetName()):
 					ws = xlApp.Sheets(i.SheetName())
-					WriteData(ws , i.Data(), byColumn, i.Origin())
-				ExitExcel(filePath, xlApp, wb, ws)					
-	else:
-		message = "Close currently running Excel \nsession."
+				else:
+					wb.Sheets.Add(After = wb.Sheets(wb.Sheets.Count), Count = 1)
+					ws = wb.Worksheets[wb.Sheets.Count]
+					ws.Name = i.SheetName()
+				WriteData(ws, i.Data(), byColumn, i.Origin())
+			if not live:
+				ExitExcel(filePath, xlApp, wb, ws)
+				
+	except:
+		xlApp.Quit()
+		Marshal.ReleaseComObject(xlApp)
+		# if error accurs anywhere in the process catch it
+		import traceback
+		errorReport = traceback.format_exc()
+		pass
 else:
-	message = "Run Me is set to False. Please set \nto True if you wish to write data \nto Excel."
+	errorReport = "Set RunMe to True."
 
 #Assign your output to the OUT variable
-if message == None:
+if errorReport == None:
 	OUT = "Success!"
 else:
-	OUT = '\n'.join('{:^35}'.format(s) for s in message.split('\n'))</Script>
-    </DSIronPythonNode.PythonNode>
-    <Dynamo.Nodes.Symbol guid="c356599c-e221-4b9a-a3dd-190629348078" type="Dynamo.Nodes.Symbol" nickname="Input" x="391.406817162576" y="226.760554455767" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <Symbol value="FilePath" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Symbol guid="4d777cdc-df53-47ec-9b9f-985d8eff7c8b" type="Dynamo.Nodes.Symbol" nickname="Input" x="391.298264027328" y="286.082388119037" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <Symbol value="RunIt" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Symbol guid="d9a7965b-5404-4321-8223-4c75029f4002" type="Dynamo.Nodes.Symbol" nickname="Input" x="392.871702971284" y="343.161565676702" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <Symbol value="ByColumn" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Symbol guid="d89038f9-dcf9-4a57-b7ef-fbbef3e8fe73" type="Dynamo.Nodes.Symbol" nickname="Input" x="386.595845545624" y="405.286719471978" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <Symbol value="BBData" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Output guid="b7ab4540-a43e-493c-bc31-eaf56881c907" type="Dynamo.Nodes.Output" nickname="Output" x="817.705653625477" y="269.849945214683" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <Symbol value="OUT" />
-    </Dynamo.Nodes.Output>
+	OUT = errorReport</Script>
+    </PythonNodeModels.PythonNode>
   </Elements>
   <Connectors>
-    <Dynamo.Models.ConnectorModel start="962c4444-7df7-418b-b5b9-da242fbde32b" start_index="0" end="b7ab4540-a43e-493c-bc31-eaf56881c907" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="c356599c-e221-4b9a-a3dd-190629348078" start_index="0" end="962c4444-7df7-418b-b5b9-da242fbde32b" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="4d777cdc-df53-47ec-9b9f-985d8eff7c8b" start_index="0" end="962c4444-7df7-418b-b5b9-da242fbde32b" end_index="1" portType="0" />
-    <Dynamo.Models.ConnectorModel start="d9a7965b-5404-4321-8223-4c75029f4002" start_index="0" end="962c4444-7df7-418b-b5b9-da242fbde32b" end_index="2" portType="0" />
-    <Dynamo.Models.ConnectorModel start="d89038f9-dcf9-4a57-b7ef-fbbef3e8fe73" start_index="0" end="962c4444-7df7-418b-b5b9-da242fbde32b" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c356599c-e221-4b9a-a3dd-190629348078" start_index="0" end="89ad47f9-938f-4826-9455-2f6dd539fa7c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4d777cdc-df53-47ec-9b9f-985d8eff7c8b" start_index="0" end="89ad47f9-938f-4826-9455-2f6dd539fa7c" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d9a7965b-5404-4321-8223-4c75029f4002" start_index="0" end="89ad47f9-938f-4826-9455-2f6dd539fa7c" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d89038f9-dcf9-4a57-b7ef-fbbef3e8fe73" start_index="0" end="89ad47f9-938f-4826-9455-2f6dd539fa7c" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="89ad47f9-938f-4826-9455-2f6dd539fa7c" start_index="0" end="b7ab4540-a43e-493c-bc31-eaf56881c907" end_index="0" portType="0" />
   </Connectors>
   <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
 </Workspace>
