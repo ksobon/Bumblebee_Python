@@ -10,7 +10,7 @@ Excel and Dynamo interop library
 """
 import clr
 import sys
-sys.path.append(r"C:\Program Files\Dynamo\Dynamo Core\1.0")
+#sys.path.append(r"C:\Program Files\Dynamo\Dynamo Core\1.1")
 clr.AddReference('ProtoGeometry')
 
 pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
