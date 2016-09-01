@@ -1,0 +1,79 @@
+<Workspace Version="1.1.0.2094" X="-338.203647999164" Y="-362.501897431999" zoom="1.74331992875497" Name="Pie Chart Graph Style" Description="This node will generate a style that can be used to control appearance of the graph portion of the chart." ID="ca163477-4ebe-4d92-84c6-7cdc209f9957" Category="Archi-lab_Bumblebee.Styles">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="2deec1fb-6779-4f8b-b74f-39782e000eb2" type="PythonNodeModels.PythonNode" nickname="Python Script" x="624.913093752754" y="316.551099412183" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="5">
+      <Script># Copyright(c) 2016, David Mans, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
+
+import clr
+import sys
+
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+
+import System
+assemblies = System.AppDomain.CurrentDomain.GetAssemblies()
+path1 = [a.Location for a in assemblies if 'bbIcons,' in a.FullName][0]
+path2 = System.IO.Path.GetDirectoryName(path1).rsplit('\\',1)[0]
+bb_path = '%s\\extra\\' %path2
+sys.path.append(bb_path)
+import bumblebee as bb
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+fillStyle = IN[0]
+textStyle = IN[1]
+borderStyle = IN[2]
+labelStyle = IN[3]
+explosion = IN[4]
+
+graphStyle = bb.BBGraphStyle()
+
+if fillStyle != None:
+	graphStyle.fillStyle = fillStyle
+if textStyle != None:
+	graphStyle.textStyle = textStyle
+if borderStyle != None:
+	graphStyle.borderStyle = borderStyle
+if labelStyle != None:
+	graphStyle.labelStyle = labelStyle
+if explosion != None:
+	graphStyle.explosion = explosion
+	
+OUT = graphStyle</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="b4ba2123-f06e-4b84-88b6-6778be386fd2" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="305.034452076071" y="268.932087859193" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="FillStyle:var=null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="181b2b4b-2947-4cbc-b5a3-329c18ee3ebd" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="299.832686899148" y="325.480319487976" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="textStyle:var=null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="bc7b0e69-f349-4ba3-8b97-b4e9e4071eb2" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="300.108277953368" y="382.643702875012" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="BorderStyle:var=null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="11246c14-d21e-4702-8111-1c747e4d85cc" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="293.090562298252" y="438.834645367469" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="LabelStyle:var=null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="2e7fdf2d-14a4-48a2-8da2-81a54fbaaaa4" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="296.769696483495" y="496.484249201793" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="Explosion:int=0" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="6986c029-efd3-43b1-86b1-729336f25da8" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="800.410545481575" y="316.447885128285" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="OUT" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="2deec1fb-6779-4f8b-b74f-39782e000eb2" start_index="0" end="6986c029-efd3-43b1-86b1-729336f25da8" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b4ba2123-f06e-4b84-88b6-6778be386fd2" start_index="0" end="2deec1fb-6779-4f8b-b74f-39782e000eb2" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="181b2b4b-2947-4cbc-b5a3-329c18ee3ebd" start_index="0" end="2deec1fb-6779-4f8b-b74f-39782e000eb2" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bc7b0e69-f349-4ba3-8b97-b4e9e4071eb2" start_index="0" end="2deec1fb-6779-4f8b-b74f-39782e000eb2" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="11246c14-d21e-4702-8111-1c747e4d85cc" start_index="0" end="2deec1fb-6779-4f8b-b74f-39782e000eb2" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2e7fdf2d-14a4-48a2-8da2-81a54fbaaaa4" start_index="0" end="2deec1fb-6779-4f8b-b74f-39782e000eb2" end_index="4" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

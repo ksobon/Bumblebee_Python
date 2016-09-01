@@ -1,0 +1,108 @@
+<Workspace Version="1.1.0.2094" X="417.78543181262" Y="-51.2806043450553" zoom="1.2198072017255" Name="(3) Color Scale Format Condition" Description="This node will generate a three (3) color scheme that can be used to format a range of numbers in Excel." ID="80d9b482-bc19-4b7b-81ea-1f41dd90a79f" Category="Archi-lab_Bumblebee.Format">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="6d4cd67a-375b-4389-a334-3e7cccdfce48" type="PythonNodeModels.PythonNode" nickname="Python Script" x="207.191266063527" y="161.382372239255" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="9">
+      <Script># Copyright(c) 2016, David Mans, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
+
+import clr
+import sys
+
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+
+import System
+assemblies = System.AppDomain.CurrentDomain.GetAssemblies()
+path1 = [a.Location for a in assemblies if 'bbIcons,' in a.FullName][0]
+path2 = System.IO.Path.GetDirectoryName(path1).rsplit('\\',1)[0]
+bb_path = '%s\\extra\\' %path2
+sys.path.append(bb_path)
+import bumblebee as bb
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+minType = IN[0]
+minValue = IN[1]
+minColor = IN[2]
+midType = IN[3]
+midValue = IN[4]
+midColor = IN[5]
+maxType = IN[6]
+maxValue = IN[7]
+maxColor = IN[8]
+
+colorScale = bb.BB3ColorScaleFormatCondition()
+
+if minType != None:
+	colorScale.minType = minType
+if minValue != None:
+	colorScale.minValue = minValue
+if minColor != None:
+	colorScale.minColor = minColor
+if midType != None:
+	colorScale.midType = midType
+if midValue != None:
+	colorScale.midValue = midValue
+if midColor != None:
+	colorScale.midColor = midColor
+if maxType != None:
+	colorScale.maxType = maxType
+if maxValue != None:
+	colorScale.maxValue = maxValue
+if maxColor != None:
+	colorScale.maxColor = maxColor
+
+#Assign your output to the OUT variable
+OUT = colorScale</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="54aa4612-93f3-4388-9eac-8e7e0dfa1eec" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="0.0769625952165143" y="145.931102146455" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="MinValueType" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="067be092-6111-49c9-a556-503a90a84e16" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-65.9230374047835" y="207.417547415665" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="MinValue: var = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="cf0e1b4b-fa1d-4ef4-b95f-9e897b919391" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="33.0769625952165" y="264.956182834618" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="MinColor" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="d6107d29-4aaf-48bf-83c7-33798e8b7f4a" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="0.0769625952165143" y="326.231093280776" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="MidValueType" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="9b59bf6b-926c-454b-9327-d911d9d016c9" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-65.9230374047835" y="385.264238710611" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="MidValue: var = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="79adea0d-65be-4466-83e8-345750524f1b" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="33.0769625952165" y="443.870266805033" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="MidColor" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="61ad10df-caa4-4dac-98f7-fd533af21467" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="0.0769625952165143" y="503.393292263369" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="MaxValueType" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="45606641-2f64-4f9d-a026-d76d4e59073d" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-65.9230374047835" y="559.681370685925" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="MaxValue: var = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="774793c6-ad66-4050-9291-84767d00e9ea" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="33.0769625952165" y="619.204396144261" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="MaxColor" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="795e742d-4a8b-4cbc-9a48-48e18d246c5b" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="373.051981098772" y="162.364429044419" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="FormatCondition" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="6d4cd67a-375b-4389-a334-3e7cccdfce48" start_index="0" end="795e742d-4a8b-4cbc-9a48-48e18d246c5b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="54aa4612-93f3-4388-9eac-8e7e0dfa1eec" start_index="0" end="6d4cd67a-375b-4389-a334-3e7cccdfce48" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="067be092-6111-49c9-a556-503a90a84e16" start_index="0" end="6d4cd67a-375b-4389-a334-3e7cccdfce48" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="cf0e1b4b-fa1d-4ef4-b95f-9e897b919391" start_index="0" end="6d4cd67a-375b-4389-a334-3e7cccdfce48" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d6107d29-4aaf-48bf-83c7-33798e8b7f4a" start_index="0" end="6d4cd67a-375b-4389-a334-3e7cccdfce48" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9b59bf6b-926c-454b-9327-d911d9d016c9" start_index="0" end="6d4cd67a-375b-4389-a334-3e7cccdfce48" end_index="4" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="79adea0d-65be-4466-83e8-345750524f1b" start_index="0" end="6d4cd67a-375b-4389-a334-3e7cccdfce48" end_index="5" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="61ad10df-caa4-4dac-98f7-fd533af21467" start_index="0" end="6d4cd67a-375b-4389-a334-3e7cccdfce48" end_index="6" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="45606641-2f64-4f9d-a026-d76d4e59073d" start_index="0" end="6d4cd67a-375b-4389-a334-3e7cccdfce48" end_index="7" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="774793c6-ad66-4050-9291-84767d00e9ea" start_index="0" end="6d4cd67a-375b-4389-a334-3e7cccdfce48" end_index="8" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

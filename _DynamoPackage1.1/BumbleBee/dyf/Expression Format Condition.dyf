@@ -1,0 +1,59 @@
+<Workspace Version="1.1.0.2094" X="-390.567685315082" Y="-201.1579572604" zoom="2.05668026833428" Name="Expression Format Condition" Description="This node will generate an expression based formatting condition that can be used with Conditionally Format Excel Node." ID="5220ca12-2319-4a94-acca-b0945790e3dc" Category="Archi-lab_Bumblebee.Format">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="d59662e1-4569-45ed-b9a6-a0a96624b0ee" type="PythonNodeModels.PythonNode" nickname="Python Script" x="467.40354313102" y="221.954725239463" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <Script># Copyright(c) 2016, David Mans, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
+
+import clr
+import sys
+
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+
+import System
+assemblies = System.AppDomain.CurrentDomain.GetAssemblies()
+path1 = [a.Location for a in assemblies if 'bbIcons,' in a.FullName][0]
+path2 = System.IO.Path.GetDirectoryName(path1).rsplit('\\',1)[0]
+bb_path = '%s\\extra\\' %path2
+sys.path.append(bb_path)
+import bumblebee as bb
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+expression = IN[0]
+graphicStyle = IN[1]
+
+formatCondition = bb.BBExpressionFormatCondition()
+
+if expression != None:
+	formatCondition.expression = expression
+if graphicStyle != None:
+	formatCondition.graphicStyle = graphicStyle
+
+#Assign your output to the OUT variable
+OUT = formatCondition</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="896571a7-475c-4a3e-a579-63d82793948d" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="301.559917257494" y="207.534481850713" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="Expression" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="cbb68d24-8cba-4533-9a95-b0f3f5a6582a" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="288.88687708647" y="268.766949667621" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="GraphicStyle" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="ecd6409e-eee0-4b5f-a7d3-f3e8a6dec686" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="630.822242259576" y="223.656509720649" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="FormatCondition" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="d59662e1-4569-45ed-b9a6-a0a96624b0ee" start_index="0" end="ecd6409e-eee0-4b5f-a7d3-f3e8a6dec686" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="896571a7-475c-4a3e-a579-63d82793948d" start_index="0" end="d59662e1-4569-45ed-b9a6-a0a96624b0ee" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="cbb68d24-8cba-4533-9a95-b0f3f5a6582a" start_index="0" end="d59662e1-4569-45ed-b9a6-a0a96624b0ee" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

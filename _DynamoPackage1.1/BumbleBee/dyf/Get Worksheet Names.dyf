@@ -1,0 +1,112 @@
+<Workspace Version="1.1.0.2094" X="-386.826188094197" Y="-243.040328993579" zoom="1.74331992875497" Name="Get Worksheet Names" Description="This node will query an Excel file and return a list of sheet names that it contains. " ID="a186e8f0-0019-40e1-a042-6dd7d3b51bec" Category="Archi-lab_Bumblebee.App">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="6661d39d-4eef-47bc-aeb8-3430878f4b63" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="454.813006387124" y="267.366146963883" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="FilePath" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="d66d572b-01ca-42b7-8614-71fbe222a592" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="354.340571881134" y="341.446853034653" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="RunIt : bool = false" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="e24fc591-595c-4529-96b8-4d6717ff20a9" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="763.42716613404" y="284.248038337386" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="OUT" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="e39a5e4f-7196-491e-9786-77fb2c4c5b77" type="PythonNodeModels.PythonNode" nickname="Python Script" x="604.742348201497" y="282.491767665869" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <Script># Copyright(c) 2016, David Mans, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
+
+import clr
+import sys
+import System
+from System import Array
+from System.Collections.Generic import *
+
+clr.AddReferenceByName('Microsoft.Office.Interop.Excel, Version=11.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c')
+from Microsoft.Office.Interop import Excel
+System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo("en-US")
+from System.Runtime.InteropServices import Marshal
+
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+
+assemblies = System.AppDomain.CurrentDomain.GetAssemblies()
+path1 = [a.Location for a in assemblies if 'bbIcons,' in a.FullName][0]
+path2 = System.IO.Path.GetDirectoryName(path1).rsplit('\\',1)[0]
+bb_path = '%s\\extra\\' %path2
+sys.path.append(bb_path)
+import bumblebee as bb
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+filePath = IN[0]
+runMe = IN[1]
+
+if filePath.GetType() == System.IO.FileInfo:
+	filePath = filePath.FullName
+
+def SetUp(xlApp):
+	# supress updates and warning pop ups
+	xlApp.Visible = False
+	xlApp.DisplayAlerts = False
+	xlApp.ScreenUpdating = False
+	return xlApp
+
+def ExitExcel(xlApp, wb):
+	# clean up before exiting excel, if any COM object remains
+	# unreleased then excel crashes on open following time
+	def CleanUp(_list):
+		if isinstance(_list, list):
+			for i in _list:
+				Marshal.ReleaseComObject(i)
+		else:
+			Marshal.ReleaseComObject(_list)
+		return None
+		
+	xlApp.ActiveWorkbook.Close(False)
+	xlApp.ScreenUpdating = True
+	CleanUp([wb,xlApp])
+	return None
+
+try:
+	errorReport = None
+	if runMe:
+		message = None
+		try:
+			dataOut = []
+			xlApp = SetUp(Excel.ApplicationClass())
+			if os.path.isfile(unicode(filePath)):
+				xlApp.Workbooks.open(unicode(filePath))
+				wb = xlApp.ActiveWorkbook
+				for i in range(0, xlApp.Sheets.Count, 1):
+					dataOut.append(xlApp.Sheets(i+1).Name)
+			ExitExcel(xlApp, wb)
+		except:
+			xlApp.Quit()
+			Marshal.ReleaseComObject(xlApp)
+			pass
+	else:
+		errorReport = "Set RunMe to True."
+except:
+		# if error accurs anywhere in the process catch it
+		import traceback
+		errorReport = traceback.format_exc()
+
+#Assign your output to the OUT variable
+if errorReport == None:
+	OUT = dataOut
+else:
+	OUT = errorReport</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="6661d39d-4eef-47bc-aeb8-3430878f4b63" start_index="0" end="e39a5e4f-7196-491e-9786-77fb2c4c5b77" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d66d572b-01ca-42b7-8614-71fbe222a592" start_index="0" end="e39a5e4f-7196-491e-9786-77fb2c4c5b77" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e39a5e4f-7196-491e-9786-77fb2c4c5b77" start_index="0" end="e24fc591-595c-4529-96b8-4d6717ff20a9" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

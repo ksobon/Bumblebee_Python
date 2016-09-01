@@ -1,0 +1,71 @@
+<Workspace Version="1.1.0.2094" X="-136.367347747129" Y="-337.832144255008" zoom="1.703916824555" Name="BB Data" Description="This node is a building block for different modes of writing to Excel files. You can combines this node into a list to write to multiple sheets or use just one to write to a single sheet. " ID="ee2bfd6a-235b-4c14-a309-f5cb3e3e3227" Category="Archi-lab_Bumblebee.Write">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="4a925457-fdab-4b41-93f3-fab4c54c71f0" type="PythonNodeModels.PythonNode" nickname="Python Script" x="508" y="316" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="3">
+      <Script># Copyright(c) 2016, David Mans, Konrad Sobon
+# @arch_laboratory, http://archi-lab.net, http://neoarchaic.net
+
+import clr
+import sys
+
+pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
+sys.path.append(pyt_path)
+
+import System
+assemblies = System.AppDomain.CurrentDomain.GetAssemblies()
+path1 = [a.Location for a in assemblies if 'bbIcons,' in a.FullName][0]
+path2 = System.IO.Path.GetDirectoryName(path1).rsplit('\\',1)[0]
+bb_path = '%s\\extra\\' %path2
+sys.path.append(bb_path)
+import bumblebee as bb
+
+#The inputs to this node will be stored as a list in the IN variable.
+dataEnteringNode = IN
+
+sheetName = IN[0]
+origin = IN[1]
+data = IN[2]
+
+# Make BBData object if list or make multiple BBData objects if
+# list depth == 3
+if isinstance(sheetName, list):
+	if isinstance(origin, list):
+		dataObjectList = []
+		for i, j, k in zip(sheetName, origin, data):
+			dataObjectList.append(bb.MakeDataObject(i, j, k))
+	else:
+		dataObjectList = []
+		for i, j in zip(sheetName, data):
+			dataObjectList.append(bb.MakeDataObject(i,None,j))
+else:
+	dataObjectList = bb.MakeDataObject(sheetName, origin, data)
+
+#Assign your output to the OUT variable
+OUT = dataObjectList</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="11459660-73cd-4e13-87b0-bc44960504ad" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="317.851276568783" y="311.872933333488" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="SheetName" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="54f3a40a-5e74-4c5b-ba48-d3fa0b863bcd" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="239.556174804758" y="374.286497014935" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="Origin" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="d5ec3999-9969-40a9-b7a6-979e6ae10758" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="355.299565466112" y="433.451016194839" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="Data" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="62242338-7e2d-4e82-b370-0ab2a357d6f4" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="706.838053565162" y="320.188963072749" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="BB Data" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="4a925457-fdab-4b41-93f3-fab4c54c71f0" start_index="0" end="62242338-7e2d-4e82-b370-0ab2a357d6f4" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="11459660-73cd-4e13-87b0-bc44960504ad" start_index="0" end="4a925457-fdab-4b41-93f3-fab4c54c71f0" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="54f3a40a-5e74-4c5b-ba48-d3fa0b863bcd" start_index="0" end="4a925457-fdab-4b41-93f3-fab4c54c71f0" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d5ec3999-9969-40a9-b7a6-979e6ae10758" start_index="0" end="4a925457-fdab-4b41-93f3-fab4c54c71f0" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>
