@@ -36,8 +36,9 @@ clearContent = IN[3]
 clearFormat = IN[4]
 cellRange = IN[5]
 
-if filePath.GetType() == System.IO.FileInfo:
-	filePath = filePath.FullName
+if filePath != None:
+	if filePath.GetType() == System.IO.FileInfo:
+		filePath = filePath.FullName
 
 def SetUp(xlApp):
 	# supress updates and warning pop ups

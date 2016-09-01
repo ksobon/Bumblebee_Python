@@ -34,8 +34,9 @@ runMe = IN[1]
 data = IN[2]
 styles = IN[3]
 
-if filePath.GetType() == System.IO.FileInfo:
-	filePath = filePath.FullName
+if filePath != None:
+	if filePath.GetType() == System.IO.FileInfo:
+		filePath = filePath.FullName
 
 def ProcessParallelLists(_func, *lists):
 	return map( lambda *xs: ProcessParallelLists(_func, *xs) if all(type(x) is list for x in xs) else _func(*xs), *lists )

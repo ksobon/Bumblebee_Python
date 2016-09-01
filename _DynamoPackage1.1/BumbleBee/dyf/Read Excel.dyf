@@ -58,8 +58,9 @@ byColumn = IN[3]
 origin = IN[4]
 extent = IN[5]
 
-if filePath.GetType() == System.IO.FileInfo:
-	filePath = filePath.FullName
+if filePath != None:
+	if filePath.GetType() == System.IO.FileInfo:
+		filePath = filePath.FullName
 
 def ReadData(ws, origin, extent, byColumn):
 

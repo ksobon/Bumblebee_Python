@@ -37,8 +37,9 @@ runMe = IN[1]
 sheetName = IN[2]
 searchValues = IN[3]
 
-if filePath.GetType() == System.IO.FileInfo:
-	filePath = filePath.FullName
+if filePath != None:
+	if filePath.GetType() == System.IO.FileInfo:
+		filePath = filePath.FullName
 
 def SetUp(xlApp):
 	# supress updates and warning pop ups

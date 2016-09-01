@@ -90,8 +90,9 @@ sheetName = IN[2]
 byColumn = IN[3]
 cellRange = IN[4]
 
-if filePath.GetType() == System.IO.FileInfo:
-	filePath = filePath.FullName
+if filePath != None:
+	if filePath.GetType() == System.IO.FileInfo:
+		filePath = filePath.FullName
 
 live = False
 if runMe:
