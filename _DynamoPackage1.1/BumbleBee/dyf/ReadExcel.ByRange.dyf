@@ -18,7 +18,7 @@ from System.Runtime.InteropServices import Marshal
 
 pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
 sys.path.append(pyt_path)
-import os
+from os import path
 
 assemblies = System.AppDomain.CurrentDomain.GetAssemblies()
 path1 = [a.Location for a in assemblies if 'bbIcons,' in a.FullName][0]
