@@ -26,7 +26,7 @@ License
 
 Bumblebee: A Plugin for Excel and Dynamo Interoperability (GPL) started by Konrad K Sobon
 
-Copyright (c) 2014-2016, Konrad K Sobon
+Copyright (c) 2014-present, Konrad K Sobon
 
 Bumblebee is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
