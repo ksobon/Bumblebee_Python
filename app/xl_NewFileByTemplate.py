@@ -73,7 +73,7 @@ if RunIt:
 			ws = xlApp.Sheets(tempSheetName)
 			ws.Activate
 	        
-			xlApp.ActiveWorkbook.SaveAs(newFilePath + "\\" + str(newFileName[i]) + ".xlsx")
+			xlApp.ActiveWorkbook.SaveAs(newFilePath + "\\" + str(newFileName) + ".xlsx")
 			xlApp.ActiveWorkbook.Close(False)
 			xlApp.screenUpdating = True
 			Marshal.ReleaseComObject(ws)
