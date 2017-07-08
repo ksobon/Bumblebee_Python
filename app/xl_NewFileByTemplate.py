@@ -41,7 +41,10 @@ dataEnteringNode = IN
 
 tempFilePath = IN[0]
 newFilePath = IN[1]
-newFileName = IN[2]
+if isinstance(IN[2],list):
+	newFileName = IN[2]
+else:
+	newFileName = [IN[2]]
 data = IN[3]
 sheetName = IN[4]
 tempSheetName = IN[5]
